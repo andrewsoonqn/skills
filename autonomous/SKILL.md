@@ -4,8 +4,6 @@ description: Manual invocation only. Use /skill:autonomous when the user wants o
 ---
 
 @pi later: next up i want an iterate skill. basically 'we will iterate through this document, in each document u produce then we go through a cycle of comment using @pi, iterate, comment, iterate, then after each comment + iterate, should have no @pi left AND all the comments are addressed. to keep it simple, no revert mechanism now, to revert, just do a comment and iterate and that's the revert. not necessarily @pi, @pi is just a quick way to let pi know where the comment is. trying to find a better alternative.. that is more integrated with nvim. ideally this alternative can also have other mechanisms like reverting etc. but that shouldn't be our work. we should find existing tools with that.
-@pi later: remind me, agent.md add: [phase to be determined], always need a way to find whether something has already been done. e.g. before doing our own survey has a research paper already done it. before implementing our own tool has someone already implemented it in whole or parts of it. this i think should go after phase where we have enough clarity but before we do the hard work of planning details or actual implementation.
-
 # Autonomous
 
 For the task active when invoked, `/skill:autonomous` is a standing grant to finish the current task without stopping for routine input.
