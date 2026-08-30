@@ -3,7 +3,6 @@ name: autonomous
 description: Manual invocation only. Use /skill:autonomous when the user wants one autonomous pass over the active task. Do not auto-trigger on phrases like "do this autonomously", "use your judgment", or "run with it"; only run on an explicit slash invocation. Autonomous mode suppresses routine clarifying/fork-point check-ins for the rest of the active task and replaces them with logged decisions.
 ---
 
-@pi later: define what makes autonomous a stronger version of "go".
 @pi later: next up i want an iterate skill. basically 'we will iterate through this document, in each document u produce then we go through a cycle of comment using @pi, iterate, comment, iterate, then after each comment + iterate, should have no @pi left AND all the comments are addressed. to keep it simple, no revert mechanism now, to revert, just do a comment and iterate and that's the revert. not necessarily @pi, @pi is just a quick way to let pi know where the comment is. trying to find a better alternative.. that is more integrated with nvim. ideally this alternative can also have other mechanisms like reverting etc. but that shouldn't be our work. we should find existing tools with that.
 @pi later: remind me, agent.md add: [phase to be determined], always need a way to find whether something has already been done. e.g. before doing our own survey has a research paper already done it. before implementing our own tool has someone already implemented it in whole or parts of it. this i think should go after phase where we have enough clarity but before we do the hard work of planning details or actual implementation.
 
@@ -12,6 +11,26 @@ description: Manual invocation only. Use /skill:autonomous when the user wants o
 For the task active when invoked, `/skill:autonomous` is a standing grant to finish the current task without stopping for routine input.
 
 Manual only. Never fire on natural-language phrasing alone ("do this autonomously", "use your judgment", "check with me then run with it"); wait for the explicit slash invocation.
+
+## Meaning
+
+`go` means: start acting on the agreed task.
+
+`autonomous` means: keep acting through ordinary uncertainty inside the agreed task.
+
+That means:
+
+- choose reasonable defaults instead of stopping for routine clarification;
+- treat cheap-to-reverse forks as decisions to log, not questions to ask;
+- route around non-load-bearing blockers and continue the rest of the task;
+- report fork points, notable decisions, deviations, and blockers at the end.
+
+It does not mean:
+
+- expand the task;
+- skip safety checks;
+- perform destructive or hard-to-reverse actions without explicit authorization;
+- use or request credentials without explaining why and how to pass them safely.
 
 ## Before starting
 
