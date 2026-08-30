@@ -1,0 +1,21 @@
+# OS/editor noise
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Logs and temporary files
+*.log
+*.jsonl
+tmp/
+temp/
+.cache/
+
+# Local/private scratch
+.local/
+private/
+*.secret
+*.key
+.env
+.env.*
