@@ -30,6 +30,31 @@ It does not mean:
 - perform destructive or hard-to-reverse actions without explicit authorization;
 - use or request credentials without explaining why and how to pass them safely.
 
+## Git defaults
+
+For repo work, autonomous mode defaults to:
+
+- new worktree: yes;
+- new branch: yes;
+- iterative commits: yes;
+- push: no.
+
+Before starting, state these defaults and ask whether the user wants to deviate. If not, proceed with them.
+
+Use a new worktree and branch to isolate autonomous work from the main working tree. Use iterative commits as checkpoints during the run. Prefer small coherent commits after verified steps. This reduces the blast radius of mistakes and makes review or revert easier.
+
+When committing, stage only owned changes. Split commits by logical goal, not by tool call or timing. Do not include unrelated dirty work from the original worktree.
+
+Push remains off by default. Force-push, branch deletion, history rewrite, publishing a PR/issue, migrations, credentials, and real user data still require explicit authorization.
+
+At the end, do not ask “commit or push?” Ask where the completed autonomous work should land, with a recommendation:
+
+- merge to main;
+- merge to another branch;
+- leave as branch/worktree for review;
+- push the branch;
+- do nothing yet.
+
 ## Before starting
 
 Before the autonomous grant kicks in, tell the user what you foresee needing from them.
