@@ -3,7 +3,6 @@ name: autonomous
 description: Manual invocation only. Use /skill:autonomous when the user wants one autonomous pass over the active task. Do not auto-trigger on phrases like "do this autonomously", "use your judgment", or "run with it"; only run on an explicit slash invocation. Autonomous mode suppresses routine clarifying/fork-point check-ins for the rest of the active task and replaces them with logged decisions.
 ---
 
-@pi later: next up i want an iterate skill. basically 'we will iterate through this document, in each document u produce then we go through a cycle of comment using @pi, iterate, comment, iterate, then after each comment + iterate, should have no @pi left AND all the comments are addressed. to keep it simple, no revert mechanism now, to revert, just do a comment and iterate and that's the revert. not necessarily @pi, @pi is just a quick way to let pi know where the comment is. trying to find a better alternative.. that is more integrated with nvim. ideally this alternative can also have other mechanisms like reverting etc. but that shouldn't be our work. we should find existing tools with that.
 # Autonomous
 
 For the task active when invoked, `/skill:autonomous` is a standing grant to finish the current task without stopping for routine input.
@@ -30,16 +29,41 @@ It does not mean:
 - perform destructive or hard-to-reverse actions without explicit authorization;
 - use or request credentials without explaining why and how to pass them safely.
 
-## Git defaults
+## Execution defaults
 
-For repo work, autonomous mode defaults to:
+Before starting, state these defaults together and ask whether the user wants to override any of them. If not, proceed with them.
+
+For code-bearing work, autonomous mode defaults to:
+
+- review/fix rounds: one;
+- maximum review/fix rounds: two.
+
+A review/fix round is a linear gate:
+
+```text
+implementation
+    ↓
+fresh-context, read-only code review
+    ↓
+orchestrator triages every finding
+    ↓
+implementer fixes accepted findings and verifies the work
+```
+
+Use the review-round budget stated before work starts. Stop early when a review finds no actionable defects. When the selected budget is two and the first fix pass does not clear the orchestrator's verification, run the second round against the fixed state. Never exceed the selected budget, and never start a third review/fix round. Do not reinterpret “continue until approved,” a failed quality gate, or newly discovered findings as permission to exceed it.
+
+The user may override the one-round default to zero or two rounds before work starts. The maximum remains two unless the user explicitly changes this skill's bound in a separate task; an autonomous grant alone cannot raise it.
+
+Keep reviewers read-only. Route accepted findings to the original implementer when implementation was delegated; provide the original brief, prior implementation report, exact findings, and current repository state because subagent calls may have isolated context. Rebuttals require evidence. Add regression coverage for accepted defects when meaningful.
+
+After the final allowed fix pass, run ordinary tests, lint, and diff checks without opening another review round. Report known or suspected unresolved findings and do not claim approval if the final state was not reviewed or did not clear verification.
+
+For repo work, autonomous mode also defaults to:
 
 - new worktree: yes;
 - new branch: yes;
 - iterative commits: yes;
 - push: no.
-
-Before starting, state these defaults and ask whether the user wants to deviate. If not, proceed with them.
 
 Use a new worktree and branch to isolate autonomous work from the main working tree. Use iterative commits as checkpoints during the run. Prefer small coherent commits after verified steps. This reduces the blast radius of mistakes and makes review or revert easier.
 
