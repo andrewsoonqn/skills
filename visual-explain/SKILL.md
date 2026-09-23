@@ -24,7 +24,7 @@ tables, with prose only connecting the visuals, not carrying the explanation its
 
 ## Workflow
 
-1. Write the explanation to a `.mdx` file, starting with a single `# Title` heading (it becomes the
+1. Write the explanation to a `.mdx` file in its folder, starting with a single `# Title` heading (it becomes the
    page title; no frontmatter). Then use the components below; you never write `import` statements,
    because they are always in scope.
 2. Validate before showing the user: `vplan check <file>.mdx`. Fix every reported `file:line:col`
@@ -32,8 +32,7 @@ tables, with prose only connecting the visuals, not carrying the explanation its
    lint** that flags weak renders (the enforced Gotchas below); its warnings fail `check`, so fix
    them too.
 3. Open the explanation directly with `vplan --static <file>.mdx --out <file>.html`. This writes
-   and opens the self-contained page. Use a different `--out <path>` when the output location
-   matters.
+   and opens the self-contained page. Keep the HTML output in the explanation's folder.
 
 Run `vplan components` anytime for the exact prop signatures.
 
@@ -71,6 +70,7 @@ brace errors that break a render.
   - delete src/gateway/legacy/
   </FileTree>
   ```
+
 - `<Chart type="bar|line|area|scatter|radar|gauge|funnel|treemap|pie" title="...">`:
   estimates/metrics. Single series: one bullet per point, `- <label>: <value>` (a number).
   Multi-series (`bar`/`line`/`area`/`radar`): a table whose header is `category | series1 | series2`
@@ -93,6 +93,7 @@ brace errors that break a render.
   | DB    | 40  | 120 |
   </Chart>
   ```
+
 - `<Compare>`: weigh approaches side by side as pros/cons cards. Each option is a `## Name`
   heading (append `(pick)` to mark the recommended one) followed by as many `- pro:` / `- con:`
   bullets as you need.
@@ -105,10 +106,12 @@ brace errors that break a render.
   - con: network hop
 
   ## In-memory token bucket
+
   - pro: fast
   - con: per-node only
   </Compare>
   ```
+
 - `<Matrix>`: a comparison grid (options across the columns, criteria down the rows) for scoring
   several choices against several dimensions. Write a markdown table; the first column is the row
   labels, and you append `(pick)` to one column header to highlight it. Use `<Compare>` for
@@ -122,6 +125,7 @@ brace errors that break a render.
   | Querying  | high            | medium     | low      |
   </Matrix>
   ```
+
 - `<Questions>`: questions or unresolved points worth surfacing, one per bullet. Use this instead
   of burying uncertainty in prose. The title defaults to "Open questions"; override with
   `title="..."`. Nest bullets under a question to show likely answers. A question with no nested
@@ -135,6 +139,7 @@ brace errors that break a render.
   - Is a 15-minute access-token TTL acceptable?
   </Questions>
   ```
+
 - `<Checklist title="...">`: a set of checks or steps, as a markdown task list: `- [x]` for done,
   `- [ ]` for todo.
 
@@ -144,6 +149,7 @@ brace errors that break a render.
   - [ ] Dashboards live
   </Checklist>
   ```
+
 - `<Stat>`: headline facts or metrics as a grid of cards. One card per bullet,
   `- <label>: <value> (<intent>) -- <caption>`, where intent is one of `note|good|warn|risk` and both
   `(intent)` and `-- caption` are optional. The value is free text (`5 min`, `99.9%`), not a number.
@@ -158,6 +164,7 @@ brace errors that break a render.
   - RPO: 5 min (risk) -- worst-case data loss
   </Stat>
   ```
+
 - Fenced code blocks are syntax-highlighted (Expressive Code): write ` ```ts ` (or js, json, bash,
   python, go, rust, sql, yaml, etc.) to show a key snippet. Add a file name with
   ` ```ts title="src/path/file.ts" ` to render a filename header on the block.

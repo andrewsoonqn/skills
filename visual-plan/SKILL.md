@@ -26,9 +26,18 @@ and tables, with prose only connecting the visuals, not carrying the plan itself
 > **If the `vplan` command is not found**, install it globally first: `npm i -g vplan@latest`
 > (published on npm). Re-run the failed command afterward.
 
+## Where it goes
+
+Save the plan in the task's document folder under `<workspace-root>/.pi/docs/01-<slug>/`,
+alongside its spec, `handoff.md`, and related documents. Use the repository root
+as `<workspace-root>` in a Git repository, otherwise use the current working directory.
+Reuse the existing task folder. If none exists, use the next unused sequence number
+in `.pi/docs/`, padded to at least two digits starting at `01`, followed by a lowercase
+kebab-case slug. Keep source, exports, supporting files, and revisions in that folder.
+
 ## Workflow
 
-1. Write the plan to a `.mdx` file, starting with a single `# Title` heading (it becomes the plan
+1. Write the plan to a `.mdx` file in its folder, starting with a single `# Title` heading (it becomes the plan
    title; no frontmatter). Then use the components below; you never write `import` statements, they
    are always in scope.
 2. Validate before showing the user: `vplan check <file>.mdx`. Fix every reported `file:line:col`

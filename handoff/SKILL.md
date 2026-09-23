@@ -9,20 +9,6 @@ Write a handoff document summarising the current session so a fresh agent
 can continue the work. Record only information a fresh session cannot
 recover elsewhere.
 
-## Where it goes
-
-Save each handoff under:
-
-`<workspace-root>/.tasks/handoffs/H{sequence}-<descriptive-slug>-handoff.md`
-
-In a Git repository, use the repository root as `<workspace-root>`.
-Outside a Git repository, use the current working directory.
-
-Create one new file for each handoff. Use the next unused `H{sequence}`
-number in `.tasks/handoffs/`. Add a short lowercase kebab-case description,
-as in `H1-refactor-agents-handoff.md`. Do not overwrite an earlier handoff.
-Keep prior numbered handoffs as session history.
-
 ## Before writing
 
 Run `git status -s` and `git log --oneline -5` before writing. Use their
@@ -53,9 +39,9 @@ Verify the branch and git state, then continue with the next action.
 
 - Aim for fewer than approximately 50 lines.
 - If a section keeps growing, move that content into `task.md`, `spec.md`,
-  or `plan.md`.
+  or `plan.md` in the same task folder.
 - Before saving, check whether a fresh agent could continue from the
-  numbered handoff plus the referenced artifacts alone.
+  handoff plus the referenced artifacts alone.
 - If a needed fact lives only in the current session, write it down.
 - Redact sensitive information such as API keys, passwords, tokens, private
   IPs, or personally identifiable information.
