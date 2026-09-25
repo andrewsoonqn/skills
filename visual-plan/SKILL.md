@@ -1,328 +1,42 @@
 ---
 name: visual-plan
 description: >-
-  This skill should be used whenever a plan for non-trivial work is being produced, presented, or
-  proposed (a feature, design, refactor, migration, or any multi-step task), including in plan mode
-  and together with whatever planning skill produced the plan. It is the default way to deliver a
-  plan: instead of a wall of text, it renders the plan as MDX to a scannable, self-contained HTML
-  page (diagrams, phases, file-change maps, comparisons) via the `vplan` CLI. It applies when the
-  user says "plan this", "what's the approach", "how should we approach X", "show me the plan",
-  "make a visual plan", "render this plan", or asks for a plan with diagrams/charts, and when they
-  want to review, approve, sign off on, or give feedback on a plan. Skip only for a trivial
-  one-step change or when the user explicitly asks for plain prose.
+  Use whenever a plan for non-trivial work is produced, presented, or proposed, including
+  features, designs, refactors, migrations, multi-step tasks, and plan mode. Use together
+  with the planning skill that produced the plan. Applies to "plan this", "what's the
+  approach", "how should we approach X", "show me the plan", "make a visual plan",
+  "render this plan", and plan review or feedback. Skip a trivial one-step change or an
+  explicit request for plain prose.
 ---
 
-## Purpose
+# Visual plan
 
-Render a plan as a visual MDX page instead of a wall of text, using the `vplan` CLI. The component
-vocabulary is general: although the examples below are code-flavored, it fits any structured plan
-(a product launch, a research agenda, an incident response), not just software changes. Use the
-components that fit the plan and skip the ones that do not.
+Read [visual-docs](../visual-docs/SKILL.md) for the shared authoring, VPlan compilation, and
+original Plannotator HTML review workflow. Resolve this link relative to the skill directory, not the current working directory.
+Use this skill only for the planning-specific guidance below. It does not replace the planning
+method that produced the plan or grant permission to implement it.
 
-Above all, **show, don't tell**: a reader should grasp the plan by scanning its diagrams, phases,
-and tables, with prose only connecting the visuals, not carrying the plan itself. The
-**Show, don't tell** section below is the heart of this skill.
+## Compose the plan
 
-> **If the `vplan` command is not found**, install it globally first: `npm i -g vplan@latest`
-> (published on npm). Re-run the failed command afterward.
+- **Lead with the structure.** Open with at most a one-paragraph context, then a Mermaid
+  architecture diagram and the `<Phase>` timeline when the plan has that structure.
+  The reader should understand the shape of the plan before reading detailed prose.
+- **Prefer a diagram or a `<FileTree>` to describing structure in words.** A flowchart of the
+  data path beats a paragraph tracing it. A file-change map beats sentences listing the files.
+- **Move the meaning into components.** Risks and decisions go in `<Callout>`s, open questions
+  in `<Questions>`, tradeoffs in `<Compare>` / `<Matrix>`, and acceptance criteria in `<Checklist>`.
+- **Keep prose tight inside phases.** A `<Phase>` is a step. Give a line or two of intent,
+  then the visual that explains the step.
+- **Right-size what you show.** A large effort may need a diagram and several phases.
+  A two-or-three-file change may need only a short `<FileTree>` and a `<Checklist>`.
+  An empty two-node flowchart shows nothing. Use a tight sentence when there is no structure
+  to show. Add `<Stat>` only for genuine standout numbers, not invented or filler metrics.
 
-## Where it goes
+The component vocabulary fits any structured plan, including a product launch, research agenda,
+or incident response. Use the components that fit the plan and skip the ones that do not.
 
-Save the plan in the task's document folder under `<workspace-root>/.pi/docs/01-<slug>/`,
-alongside its spec, `handoff.md`, and related documents. Use the repository root
-as `<workspace-root>` in a Git repository, otherwise use the current working directory.
-Reuse the existing task folder. If none exists, use the next unused sequence number
-in `.pi/docs/`, padded to at least two digits starting at `01`, followed by a lowercase
-kebab-case slug. Keep source, exports, supporting files, and revisions in that folder.
+Review submission is not an execution instruction. Continue within the user's requested scope.
+Do not wait for a browser verdict unless the user has made approval a condition of the work.
 
-## Workflow
-
-1. Write the plan to a `.mdx` file in its folder, starting with a single `# Title` heading (it becomes the plan
-   title; no frontmatter). Then use the components below; you never write `import` statements, they
-   are always in scope.
-2. Validate before showing the user: `vplan check <file>.mdx`. Fix every reported `file:line:col`
-   issue (it names valid enum values and flags unknown components). `check` also runs a **quality
-   lint** that flags weak renders (the enforced Gotchas below); its warnings fail `check`, so fix
-   them too.
-3. **Present the plan with `vplan <file>.mdx`. An interactive review is the default way to deliver a
-   plan, not a special mode reserved for sign-off.** It opens the plan with a feedback layer where the
-   user comments on whole sections, asks the agent immediate anchored questions, or selects exact
-   text for either action, and **answers any `<Questions>` directly** (each
-   question becomes an inline answer field; a question with nested option bullets becomes clickable
-   choices, and the picked option's text (or the typed "Other" text) is the answer, printed back as
-   `Answer to "<question>":`), then clicks
-   Approve / Deny / Iterate. Comments, unfinished composer text, notes, and answers autosave. In the
-   default Review Queue, **Iterate sends a cumulative feedback snapshot without ending or locking the
-   review**. Each snapshot prints to stdout while the command keeps waiting; Approve exits 0, Deny
-   exits 1, and timeout exits 3 (`--timeout`, default 15m; closing the tab counts as deny).
-   `--no-daemon` keeps the legacy one-shot behavior where Iterate exits 2.
-
-   `vplan` is a long-running foreground server. In Pi, run each review in a detached `tmux` session.
-   Do not leave it attached to a `bash` tool call, and do not use `nohup ... &`: Pi does not support
-   background bash, and the orphaned review can be reaped after roughly five minutes. Use a review
-   timeout longer than the expected reading period. This example allows one hour:
-
-   ```bash
-   file=/absolute/path/to/plan.mdx
-   review_dir=$(mktemp -d "${TMPDIR:-/tmp}/vplan-review.XXXXXX")
-   session="vplan-${review_dir##*.}"
-   printf -v file_q '%q' "$file"
-   printf -v log_q '%q' "$review_dir/output.log"
-   printf -v status_q '%q' "$review_dir/exit-code"
-   printf -v pi_session_id_q '%q' "${PI_SESSION_ID:-}"
-   printf -v pi_session_file_q '%q' "${PI_SESSION_FILE:-}"
-   tmux new-session -d -s "$session" \
-     "env PI_SESSION_ID=$pi_session_id_q PI_SESSION_FILE=$pi_session_file_q vplan $file_q --timeout 1h >$log_q 2>&1; printf '%s\\n' \$? >$status_q"
-   printf 'session=%s\\nlog=%s\\nstatus=%s\\n' \
-     "$session" "$review_dir/output.log" "$review_dir/exit-code"
-   ```
-
-   Keep the printed session name and file paths. Shell variables do not persist between Pi `bash`
-   calls. On later turns, substitute the printed literal values and inspect the growing output
-   without blocking:
-
-   ```bash
-   test -f '<printed status path>' && cat '<printed log path>' '<printed status path>'
-   tmux has-session -t '<printed session name>' 2>/dev/null && echo "review still active"
-   ```
-
-   Passing the Pi variables binds the review to this persisted session and its exact branch point.
-   When the local Pi bridge is registered, Iterate is injected into this session immediately and
-   browser questions run on persisted Pi branches; follow-ups resume their original branch. The same
-   Iterate snapshot still prints to stdout as a durable fallback. Do not act twice on the printed
-   copy after handling the injected request. Without a registered bridge, track and act on each new
-   Iterate block while the status file is absent. Always read the final output and exit code before
-   removing the review directory. (The explicit `--review` flag still works but is redundant now that review is the
-   default.) A comment may carry a severity tag:
-   treat a `[must-fix]` comment as blocking (it must
-   be addressed before the plan can be approved) and a `[suggestion]` or untagged comment as
-   non-blocking input. Then act on the printed feedback:
-   - **Approve** -> proceed with the plan as written.
-   - **Iterate** -> treat every newly printed snapshot as actionable while the current review stays
-     open. Revise the plan addressing its comments, then re-run `vplan <file>.mdx`; the review tab
-     updates the same plan in place and the round number increments automatically
-     (pass `-i N` only to override it). Repeat until Approve or Deny. **Edit
-     the same `.mdx` file in place** and re-render: `vplan` snapshots each plan it presents (keyed by
-     the file path), so the next render automatically marks what changed since the last view with a
-     subtle git-gutter accent and a "N changed" summary, letting the user re-review only the delta.
-     Pass `--diff <baseline.mdx>` to diff against an explicit file instead of the snapshot, or
-     `--no-diff` to suppress diffing (e.g. a clean first look).
-   - **Deny** -> stop and reconsider; do not proceed.
-
-   **Review is the right default for every non-trivial plan.** Targeted comments and in-place
-   `<Questions>` answers drive sharper revisions than back-and-forth chat, and the loop ends in an
-   explicit Approve so you know it is settled. Reach for a static render (step 4) only when the user
-   just wants to look, not shape or decide.
-4. **A static page, a live-reloading preview, or a PDF/JPG export** are the non-review outputs, for
-   when the user only wants to look or wants a shareable file rather than review one. When you need
-   one, **load `references/static-exports.md`**; it holds the commands and flags for these (kept out
-   of here so review stays the default path). Authoring the plan (everything below) is identical
-   whichever output you choose.
-
-Run `vplan components` anytime for the exact prop signatures.
-
-## Components
-
-The data components (`FileTree`, `Chart`, `Stat`, `Compare`, `Matrix`, `Questions`, `Checklist`)
-take their data as **markdown children**, not props: write a normal markdown list (or, for `Matrix`
-and a multi-series `Chart`, a markdown table) between the tags. Only the scalar settings
-(`title`, `type`, `status`) are attributes. This is fewer tokens and avoids the `{[{ ... }]}`
-brace errors that break a render.
-
-- `<Phase title="..." status="planned|active|done">`: one step in a numbered vertical
-  timeline; wraps markdown (ordered lists, prose, nested components). The steps auto-number in
-  order. One per major step of the plan.
-- ` ```mermaid ` fenced block, for diagrams: architecture (`flowchart`), `sequenceDiagram`,
-  dependency graphs, `stateDiagram-v2`, `classDiagram`, `erDiagram`, and `xychart-beta`. Reach for
-  this first for anything structural. (gantt and pie are not supported; use `<Chart>` for
-  quantitative data. `check` now validates each diagram, so an unsupported type fails check with a
-  `file:line:col` instead of rendering an error box.)
-- ` ```math ` fenced block, a display formula written in LaTeX, typeset as math (complexity
-  bounds, probabilities, linear algebra). Example: ` ```math ` then `T(n) = O(n \log n)`.
-- `<Callout type="note|tip|risk|decision|warn">`: highlight a risk, decision, tip, or note; wraps
-  markdown. (`note` is blue, `tip` is green, `decision` is purple, `risk` is red, `warn` is yellow.)
-- `<FileTree>`: file-change map. One bullet per file, `- <change> <path>`, where `change` is
-  `add|modify|delete|move`. A move needs both ends, `- move <from> -> <to>` (the file renders at
-  its destination with the origin shown). A path ending in `/` marks a whole directory (e.g.
-  `- delete src/legacy/`). A colored file-type icon is added automatically from the path's
-  extension. Append ` -- <note>` to any line for a short inline comment on that change (what it does
-  or why); keep it to a phrase, since it shares the row with the file name.
-
-  ```mdx
-  <FileTree>
-  - add src/gateway/rate-limiter.ts -- sliding-window check against Redis
-  - modify src/gateway/middleware.ts -- mount the limiter behind the flag
-  - delete src/gateway/legacy/
-  </FileTree>
-  ```
-- `<Chart type="bar|line|area|scatter|radar|gauge|funnel|treemap|pie" title="...">`:
-  estimates/metrics. Single series: one bullet per point, `- <label>: <value>` (a number).
-  Multi-series (`bar`/`line`/`area`/`radar`): a table whose header is `category | series1 | series2`
-  (cells after the first name the series and become the legend; the first column is the category
-  axis). Specifics: `scatter` is a table with exactly **two** value columns read as x and y
-  (`| point | x | y |`); `pie`/`gauge`/`funnel`/`treemap` are always single-series, list form only (a
-  table is rejected), with `gauge` on a 0-100 scale and `funnel` descending. Add `stacked` to a
-  multi-series `bar`/`area` (`<Chart type="bar" stacked>`) to stack rather than group.
-
-  ```mdx
-  <Chart type="bar" title="Effort (days)">
-  - Limiter: 2
-  - Dashboards: 1
-  </Chart>
-
-  <Chart type="line" title="Latency by stage (ms)">
-  | Stage | p50 | p95 |
-  |-------|-----|-----|
-  | Auth  | 12  | 30  |
-  | DB    | 40  | 120 |
-  </Chart>
-  ```
-- `<Compare>`: weigh approaches side by side as pros/cons cards. Each option is a `## Name`
-  heading (append `(pick)` to mark the recommended one) followed by as many `- pro:` / `- con:`
-  bullets as you need.
-
-  ```mdx
-  <Compare>
-  ## Redis sliding window (pick)
-  - pro: accurate
-  - pro: shared across nodes
-  - con: network hop
-
-  ## In-memory token bucket
-  - pro: fast
-  - con: per-node only
-  </Compare>
-  ```
-- `<Matrix>`: a comparison grid (options across the columns, criteria down the rows) for scoring
-  several choices against several dimensions. Write a markdown table; the first column is the row
-  labels, and you append `(pick)` to one column header to highlight it. Use `<Compare>` for
-  pros/cons, `<Matrix>` for a scorecard.
-
-  ```mdx
-  <Matrix>
-  | Dimension | Postgres (pick) | ClickHouse | DynamoDB |
-  |-----------|-----------------|------------|----------|
-  | Writes    | medium          | high       | high     |
-  | Querying  | high            | medium     | low      |
-  </Matrix>
-  ```
-- `<Questions>`: open questions you want the reader to resolve before building, one per bullet.
-  Use this instead of burying uncertainties in prose. The title defaults to "Open questions";
-  override with `title="..."`. In a `--review` session each question is directly answerable, so
-  prefer a `<Questions>` block over prose when you want the reviewer to answer specific questions.
-  Nest bullets under a question to offer **multiple-choice options**: in a review they become
-  clickable choices (plus an "Other" free-text field), and the chosen option's text comes back as
-  the answer. Offer options whenever you can enumerate the likely answers; they get you a crisp,
-  actionable answer instead of prose. A question with no nested bullets stays free-text.
-
-  ```mdx
-  <Questions>
-  - Should the limiter fail open or fail closed if Redis is unreachable?
-    - Fail open, availability first
-    - Fail closed, safety first
-  - Is a 15-minute access-token TTL acceptable?
-  </Questions>
-  ```
-- `<Checklist title="Done when">`: acceptance criteria / definition of done, as a markdown task
-  list: `- [x]` for done, `- [ ]` for todo.
-
-  ```mdx
-  <Checklist title="Done when">
-  - [x] Returns 429 over the limit
-  - [ ] Dashboards live
-  </Checklist>
-  ```
-- `<Stat>`: headline plan metrics as a grid of cards (files changed, estimated uptime, rollout).
-  One card per bullet, `- <label>: <value> (<intent>) -- <caption>`, where intent is one of
-  `note|good|warn|risk` and both `(intent)` and `-- caption` are optional. The value is free text
-  (`5 min`, `99.9%`), not a number. Use this for static facts, not time series (use `<Chart>` for
-  those). Only add a `<Stat>` when the plan genuinely has standout numbers worth surfacing; most
-  plans have none, and an invented or filler metric is worse than omitting the component entirely.
-
-  ```mdx
-  <Stat>
-  - Files changed: 12
-  - Est. uptime: 99.9% (good)
-  - RPO: 5 min (risk) -- worst-case data loss
-  </Stat>
-  ```
-- Fenced code blocks are syntax-highlighted (Expressive Code): write ` ```ts ` (or js, json, bash,
-  python, go, rust, sql, yaml, etc.) to show a key snippet. Add a file name with
-  ` ```ts title="src/path/file.ts" ` to render a filename header on the block.
-- Mark lines and text inside a code block with Expressive Code props in the fence meta string
-  (no component needed). Three marker types: `mark` (neutral, the default), `ins` (green,
-  inserted), `del` (red, removed). Each takes line numbers, ranges, quoted strings, or a
-  `/regex/`. Use this to call attention to the lines a plan changes.
-  - Lines/ranges (neutral): ` ```ts {2} `, ` ```ts {2-4} `, ` ```ts {1, 3, 5-6} `
-  - Typed lines: ` ```ts ins={3-4} del={2} mark={6} ` (combine freely in one block)
-  - Inline text: ` ```ts "TokenBucket" `, a rename as ` ```ts del="oldName" ins="newName" `
-  - Regex (and capture group): ` ```ts /\bTODO\b/ `, ` ```ts ins=/const (\w+) =/ ` (marks the group)
-
-## Show, don't tell
-
-The whole point of a visual plan is to replace a wall of prose with something the reader grasps by
-scanning. Default to a component over a sentence: if a fact has structure, show it; do not describe
-it in paragraphs. Prose is the connective tissue between visuals, never the substance.
-
-- **Lead with the structure.** Open with at most a one-paragraph context, then a ` ```mermaid `
-  architecture diagram, then the `<Phase>` timeline. The reader should understand the shape of the
-  plan before reading a single full sentence.
-- **Prefer a diagram or a `<FileTree>` to describing structure in words.** A flowchart of the data
-  path beats a paragraph tracing it; a file-change map beats sentences listing the files.
-- **Move the meaning out of prose into the component that carries it.** Risks and decisions go in
-  `<Callout>`s, open questions in `<Questions>`, tradeoffs in `<Compare>` / `<Matrix>`, acceptance
-  criteria in `<Checklist>`, not buried in paragraphs where they are easy to skim past.
-- **Keep prose tight inside phases.** A `<Phase>` is a step, not an essay: a line or two of intent,
-  then the visual. The visual is the point.
-- **Right-size what you show.** A large effort opens with a diagram and several phases; a
-  two-or-three-file change may need only a short `<FileTree>` and a `<Checklist>`. Do not add a
-  diagram or phase that carries no information: an empty 2-node flowchart shows nothing and is worse
-  than one plain sentence. Show when there is structure to show; otherwise a tight sentence is fine
-  (this applies to `<Stat>` too, as its own entry notes).
-
-## Composing a plan
-
-- `<Phase>` and `<Callout>` wrap arbitrary markdown and components: a `<FileTree>`, `<Chart>`,
-  `<Matrix>`, a ` ```mermaid ` diagram, a code block, or a `- [ ]` task list all nest inside them.
-  Nest freely to group related content under a step or a highlight.
-- Diagrams and charts each render a hover "expand" button that opens a zoomable, pannable
-  fullscreen viewer, so a dense diagram stays legible even when shrunk inline (code blocks do not).
-  You can lean on it for a necessarily-large diagram, but splitting into smaller diagrams still
-  reads better when the inline view must stand on its own.
-
-## Rules
-
-- **Never pass `--no-open` for a user-facing plan.** The point is that the user sees it; the review
-  session opens automatically. Reserve `--no-open` for an explicit headless/CI request.
-- **No images or external assets.** The page is a single self-contained file, so a markdown image
-  (`![](url)`) or any external asset cannot be embedded, and `check` rejects markdown images. Use a
-  ` ```mermaid ` diagram for anything visual, or describe it in text.
-
-## Gotchas
-
-Several of these (a wall-of-prose phase, a wide LR mermaid diagram, an over-long `Matrix` cell, a
-commented `FileTree` move row, a wildly-scaled `Chart`) are now enforced by the `check` quality lint
-and will fail it, so they are hard rules, not just style advice.
-
-- **`<`, `{`, and `}` are MDX syntax in prose.** A bare `<Thing>` or `{value}` can break the render.
-  Wrap literal angle brackets, braces, generics (`List<T>`), or tag-like text in backticks or a code
-  fence, where every character is safe and literal.
-- **Raw inline HTML tags fail `check`.** `<kbd>`, `<sub>`, `<sup>`, `<details>` and the like are read
-  as unknown components and fail; use backticks or plain text instead. Plain markdown otherwise works
-  alongside the components: GFM tables (outside `<Matrix>` / `<Chart>`), blockquotes, footnotes,
-  `~~strikethrough~~`, autolinks, `- [ ]` task lists, and custom-start ordered lists all render.
-- **`<Chart>` shows the shape of the data, not exact figures.** There are no on-bar value labels, so
-  any number the reader must know precisely belongs in prose too. Keep labels to a word or two (long
-  bar/line x-axis labels get dropped or crowded), and never put series of wildly different magnitudes
-  on one chart: a value near 50 beside one near 2,000,000 shares a single y-axis and flattens the
-  small series to the zero line. Split into separate charts or normalize to the same unit.
-- **`<Matrix>` cells do not wrap.** A long sentence in one cell forces a horizontal scrollbar and
-  pushes the other columns off-screen. Keep cells to a word or a short score; put rationale in prose
-  or a `<Callout>`, not in a cell.
-- **Avoid `-- comments` on `<FileTree>` `move` rows.** A move already shows its origin path (the
-  `← <from>` annotation), which eats most of the row width, so a comment on the same row gets crowded
-  out. Leave move rows uncommented and put any explanation in prose or a `<Callout>`; reserve `--
-  comments` for add/modify/delete rows, which have the space.
-- **Wide mermaid diagrams shrink to illegibility.** Prefer top-down (`flowchart TD`) once a diagram
-  has many nodes; a long left-to-right (`LR`) chain shrinks to fit the page and becomes effectively
-  unreadable inline. Split a large flow into a few smaller diagrams instead of one sprawling one.
+VPlan compiles the document. Plannotator reviews the generated HTML. Apply requested changes
+to the original MDX and start a new review. Approval of a document does not authorize implementation.

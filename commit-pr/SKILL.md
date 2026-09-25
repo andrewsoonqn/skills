@@ -1,6 +1,6 @@
 ---
 name: commit-pr
-description: Use when committing, pushing, or opening a pull request, and when reviewing or rewriting a commit message or suggesting a branch name. Owns the user's commit-message conventions plus the classic 50/72 style for external repos, runs subagent-driven, and is fork/remote/base-aware. Supersedes the generic stock /commit-push-pr command.
+description: Use when writing/reviewing commits, pushing, opening a pull request, or suggesting a branch name.
 ---
 
 # Commit / Push / PR
