@@ -7,6 +7,7 @@ description: >-
   approach", "how should we approach X", "show me the plan", "make a visual plan",
   "render this plan", and plan review or feedback. Skip a trivial one-step change or an
   explicit request for plain prose.
+disable-model-invocation: true
 ---
 
 # Visual plan

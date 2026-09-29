@@ -8,6 +8,7 @@ description: >-
   and callouts. Applies to "explain visually", "show how this works", "make a visual
   explainer", "diagram this", or requests to see an explanation. Skip when prose is already
   the clearest form or the user explicitly asks for plain prose.
+disable-model-invocation: true
 ---
 
 # Visual documents

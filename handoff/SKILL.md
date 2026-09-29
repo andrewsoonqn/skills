@@ -1,6 +1,7 @@
 ---
 name: handoff
 description: Capture in-flight session state so the next session can resume without re-derivation. Use when stopping work mid-task, ending a session for the day, running low on context, immediately after context compaction, or before /clear. Triggers on "handoff", "save session context", "wrap up for today", "continue tomorrow", and post-compact or post-clear hook prompts.
+disable-model-invocation: true
 ---
 
 # Handoff
