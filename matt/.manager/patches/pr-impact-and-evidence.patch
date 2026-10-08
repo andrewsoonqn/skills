@@ -8,7 +8,7 @@
  metadata:
    credits:
      skill: show-me
-@@ -9,12 +9,133 @@
+@@ -9,12 +9,129 @@
      url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
  ---
  
@@ -85,9 +85,7 @@
 +<Concrete test run command, including working directory when needed>
 +```
 +
-+| Observation | Proves |
-+|---|---|
-+| <Actual output, count, error, or measurement> | <Behavior established by this run> |
++- <I ran or checked X using Y and observed Z, with actual output, counts, errors, or measurements>
 +
 +### Artifacts
 +
@@ -133,16 +131,14 @@
 +
 +## Verification
 +
-+| Command / Scenario | Observed Result | What It Proves |
-+|---|---|---|
-+| ... | ... | ... |
++- <Action performed, method or command, and observed result>
 +
 +<Screenshots, video, or profiling artifacts>
 +<Material limitations and anything not exercised>
  
  ## Evidence
  
-@@ -163,6 +284,32 @@
+@@ -163,6 +280,32 @@
  
  Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
  
@@ -160,7 +156,7 @@
 +
 +### Verification
 +
-+Show concrete test run commands in shell blocks, including the working directory and relevant flags. Label a test scenario `(new)` only when the test was added by this change. For each run, use an Observation / Proves table stating what was observed and the behavior it establishes. Report counts, errors, warnings, or measurements when captured. Distinguish passed, failed, and not run. A command without its result is not verification evidence.
++Show concrete test run commands in shell blocks, including the working directory and relevant flags. Label a test scenario `(new)` only when the test was added by this change. Report verification as bullet points. Write each bullet in first person: the action performed, how it was performed, and the observed result. Include the method that supports the claim, such as the command run, comparison made, or failure deliberately injected. Keep trivial change-scope statements in the Change Walkthrough instead of the verification bullets. Report counts, errors, warnings, or measurements when captured. Distinguish passed, failed, and not run. A command without its result is not verification evidence.
 +
 +State what was not exercised, such as real login, persistence, or production routing. For a foundation-only change, show its interface and a test or caller exercising it.
 +
