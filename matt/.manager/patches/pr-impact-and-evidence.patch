@@ -142,7 +142,7 @@
  
  ## Evidence
  
-@@ -163,6 +284,30 @@
+@@ -163,6 +284,32 @@
  
  Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
  
@@ -155,6 +155,8 @@
 +### Change Walkthrough
 +
 +Use a CodeRabbit-style grouped walkthrough: one row per coherent area, the relevant files, what changed, and why. This is a change summary, not a list of every file or a dependent-PR stack. Reference the relevant Impact point, such as N1 or F1, when that relationship is available from the diff or evidence. Otherwise explain the change and why directly, without inventing a connection. Link actual dependent PRs separately when they exist.
++
++Append `(new)` to each file path added by the change in the Change Walkthrough. Determine new files from the diff against the intended base, not from whether they are new to the reader. Leave modified, renamed, and deleted files unmarked.
 +
 +### Verification
 +
