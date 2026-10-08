@@ -1,0 +1,11 @@
+--- a/implement/SKILL.md
++++ b/implement/SKILL.md
+@@ -6,7 +6,7 @@
+ 
+ Implement the work described by the user in the spec or tickets.
+ 
+-Use /tdd where possible, at pre-agreed seams.
++Follow the testing policy in AGENTS.md. Use /tdd when the user explicitly requests test-first development. Verify the requested behavior through the relevant public interfaces.
+ 
+ Run typechecking regularly, single test files regularly, and the full test suite once at the end.
+ 

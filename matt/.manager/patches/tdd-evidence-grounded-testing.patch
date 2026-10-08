@@ -1,0 +1,28 @@
+--- a/tdd/SKILL.md
++++ b/tdd/SKILL.md
+@@ -1,9 +1,13 @@
+ ---
+ name: tdd
+-description: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests.
++description: Test-driven development. Use when the user explicitly requests test-first development or the red-green-refactor loop.
+ ---
+ 
+ # Test-Driven Development
++
++Use this skill for explicitly requested test-first development. A request for integration tests alone does not select TDD.
++
++Before entering the loop, identify the source of each expected outcome: explicit requirements, user-provided examples, an external contract, or a reproduced bug. An assertion that repeats the implementation's interpretation is not independent evidence, even if it uses a hardcoded literal. If the expected behavior is unresolved, ask the user to settle it before encoding it in a test.
+ 
+ TDD is the red → green loop. This skill is the reference that makes that loop produce tests worth keeping: what a good test is, where tests go, the anti-patterns, and the rules of the loop. Every section applies on every cycle: consult them before and during the loop, not after.
+ 
+@@ -19,9 +23,7 @@
+ 
+ A **seam** is the public boundary you test at: the interface where you observe behavior without reaching inside. Tests live at seams, never against internals.
+ 
+-**Test only at pre-agreed seams.** Before writing any test, write down the seams under test and confirm them with the user. No test is written at an unconfirmed seam. You can't test everything, so agreeing the seams up front is how testing effort lands on the critical paths and complex logic instead of every edge case.
+-
+-Ask: "What's the public interface, and which seams should we test?"
++**Test at the relevant public seams.** Before writing a test, identify and report the seam under test and the source of its expected outcome. Choose the seam from the requirements and existing public interfaces. Ask the user only when unresolved behavior or scope requires their decision. Focus testing effort on the critical paths and complex logic.
+ 
+ When the shape of that interface is itself in question (how deep the module is, where the seam belongs, what the interface should expose), call the Skill tool with "codebase-design" for the vocabulary. It is the shared source of the module, interface, depth, seam, adapter, leverage and locality terms, and it is a reference to consult, not a session to run.
+ 
