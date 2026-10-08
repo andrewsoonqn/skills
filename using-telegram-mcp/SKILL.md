@@ -1,6 +1,6 @@
 ---
 name: using-telegram-mcp
-description: Use when reading, scanning, searching, or acting on Telegram via the telegram-mcp server (tools prefixed mcp__telegram-mcp__). Covers the cross-tool decisions no single tool docstring owns - which read tool to reach for, how to run a full sweep without capping, view vs download media (view_media reads images and polls inline), direct-read vs semantic index, and not treating image/poll messages as empty. Triggers on "scan/search my Telegram", "check my chats", "find the message about X", "read that poll/image".
+description: Use when reading, scanning, searching, or acting on Telegram through the telegram-mcp tools.
 ---
 
 # Using the telegram-mcp MCP

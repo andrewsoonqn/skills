@@ -1,17 +1,6 @@
 ---
 name: calendar
-description: >-
-  Read, propose, and write Google Calendar events for Andrew via the
-  mcp__claude_ai_Google_Calendar__* tools, with a fixed house style for what
-  an event looks like and a propose-then-confirm gate before any write. Use
-  this skill whenever the user wants something put on a calendar, moved,
-  deleted, or checked - including "add to my cal", "schedule this", "am I
-  free Thursday", "when's my next X", pasted email invites, screenshots of
-  run-sheets, deadlines found online, or commitments extracted from chat
-  scans. Also use it when the user asks what's on their calendar or whether
-  two things clash. Trigger it even when the word "calendar" is absent: "when
-  am I free next week", "put this meeting somewhere", "don't let me miss the
-  drop deadline", and "add the interview they just sent" all belong here.
+description: Use when the user wants to check or change Andrew’s Google Calendar, including commitments found in messages or documents.
 ---
 
 # Calendar

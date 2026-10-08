@@ -1,13 +1,6 @@
 ---
 name: visual-docs
-description: >-
-  Shared visual document vocabulary and Plannotator review workflow for plans, explanations,
-  and other structured documents. Use whenever a topic, concept, system, mechanism, workflow,
-  comparison, or relationship would be clearer visually instead of in prose. Deliver a scannable visual
-  MDX document compiled by VPlan and reviewed in original Plannotator, with diagrams, timelines, tables, charts,
-  and callouts. Applies to "explain visually", "show how this works", "make a visual
-  explainer", "diagram this", or requests to see an explanation. Skip when prose is already
-  the clearest form or the user explicitly asks for plain prose.
+description: Use when a non-plan topic, system, workflow, comparison, or relationship would be clearer as a visual document than prose.
 disable-model-invocation: true
 ---
 

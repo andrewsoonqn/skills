@@ -1,12 +1,6 @@
 ---
 name: visual-plan
-description: >-
-  Use whenever a plan for non-trivial work is produced, presented, or proposed, including
-  features, designs, refactors, migrations, multi-step tasks, and plan mode. Use together
-  with the planning skill that produced the plan. Applies to "plan this", "what's the
-  approach", "how should we approach X", "show me the plan", "make a visual plan",
-  "render this plan", and plan review or feedback. Skip a trivial one-step change or an
-  explicit request for plain prose.
+description: Use alongside a planning skill whenever a non-trivial plan is produced or reviewed, unless the user requests plain prose.
 disable-model-invocation: true
 ---
 

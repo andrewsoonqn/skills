@@ -1,11 +1,6 @@
 ---
 name: session-search
-description: >-
-  Use when an answer may live in a past coding-agent session: "have we
-  discussed X before", "how did we fix Y", "find that session where...",
-  recalling a prior decision, error, or investigation, or checking whether
-  Claude Code, Codex, OpenCode, Pi, or another agent already tried something.
-  Also use before re-deriving work that appears previously solved.
+description: Use when an answer may exist in a past coding-agent session, especially before re-deriving prior work.
 ---
 
 # Session Search

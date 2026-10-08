@@ -1,6 +1,6 @@
 ---
 name: mail
-description: Use when the user wants to read, search, summarize, check unread, or send their personal email — their NUS Outlook/Exchange account (e1375600@u.nus.edu) or their Gmail (andrewsoonqn@gmail.com). Triggers on "check my mail/inbox", "any new emails", "email from X", "send/reply to an email", "my NUS mail", university mail.
+description: Use when the user wants to read, search, summarize, send, or reply to mail through their NUS Outlook or Gmail account.
 ---
 
 # Mail (NUS Outlook + Gmail)
