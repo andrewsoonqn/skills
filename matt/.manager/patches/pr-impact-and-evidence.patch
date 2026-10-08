@@ -1,0 +1,175 @@
+--- a/pr/SKILL.md
++++ b/pr/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: pr
+-description: "Use when writing a PR body."
++description: "Use when writing a PR body or opening or updating a pull request."
+ metadata:
+   credits:
+     skill: show-me
+@@ -9,12 +9,133 @@
+     url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
+ ---
+ 
++## Workflow
++
++1. Read the repository's PR template and the complete diff against the intended base. Preserve repository headings and checklists. Add the sections below within that structure where appropriate.
++2. Identify the problem, demonstrable outcome, and whether the change achieves that outcome completely. Include closing issue references only when applicable.
++3. Describe the user or system impact and write a grouped change walkthrough from the diff. Prefer Mermaid architecture or sequence diagrams over file trees when relationships or flow need explanation.
++4. Collect observed verification results and applicable artifacts. Finish when each reported result has evidence and untested behavior is explicit.
++5. When asked to open or update a PR, identify the actual upstream and remote, choose the base explicitly, and confirm it exists on the target remote. Run `gh pr list --head <branch> --repo <owner/repo>` first. Update an existing PR with `gh pr edit`, otherwise create it. Push only when explicitly requested. If the branch is not available remotely, report that blocker and retain the draft.
++
++Keep the rendered description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Link to supporting detail instead of repeating it. Leave PR paragraphs and bullets unwrapped.
++
++## Base PR template
++
++Use the following repository template as the base. Impact, Change Walkthrough, test commands and observation/proof tables, Artifacts, and Limitations are additions. Preserve the Summary, Description of Changes, Verification, Tests, and Checklist structure and its existing instructions. Apply repository-specific checklists only where applicable.
++
++````markdown
++<!--
++Keep the entire rendered PR description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Keep the outcome, essential changes, repeatable evidence and material limitations. Link to supporting detail instead of repeating it.
++-->
++
++## Summary
++
++<!--
++Provide a concise summary of what this pull request is addressing.
++
++If this PR closes any issues, list them here by number (e.g., Closes #123).
++
++What is the demonstrable outcome of this PR? And is it complete or needs future changes to achieve these outcomes? State in natural prose.
++-->
++
++Closes #
++
++## Description of Changes
++
++<!--
++Detail the specific changes made in this pull request. Explain the problem addressed and how it was resolved. If applicable, provide before and after comparisons, screenshots, or any relevant details to help reviewers understand the changes easily.
++-->
++
++### Impact
++
++#### New
++
++- **N1:** <Added Y so that users can Z.>
++
++#### Fixes
++
++- **F1:** <Fixed issue Y which previously caused Z.>
++
++#### Others
++
++- **O1:** <Other meaningful user or system outcomes.>
++
++### Change Walkthrough
++
++| Area / Files | Change | Why / Impact |
++|---|---|---|
++| ... | ... | N1, F1, or O1 when supported, otherwise explain why |
++
++<Mermaid diagram when it clarifies architecture or flow>
++
++## Verification
++
++### Tests
++
++<!--
++Give repeatable commands, observed results and the behavior each proves. State what was not exercised, such as real login, persistence or production routing. For a foundation-only change, show its interface and a test or caller exercising it. Be concise
++-->
++
++**<Test scenario>** <append (new) only for a newly added test>
++
++```sh
++<Concrete test run command, including working directory when needed>
++```
++
++| Observation | Proves |
++|---|---|
++| <Actual output, count, error, or measurement> | <Behavior established by this run> |
++
++### Artifacts
++
++<Screenshots or video for UI changes. Flame charts when profiling is relevant.>
++
++### Limitations
++
++- <Material limitation or behavior not exercised>
++
++### Checklist
++
++- [ ] Documentation has been updated where applicable, including docstrings for API changes.
++- [ ] Go code passes formatting and correctness checks (`make fmt` to format, `make lint` to verify).
++````
++
++## Retained template reference
++
++The earlier template and guidance remain below for later pruning. The base template above controls the PR structure.
++
+ Use this template for writing the PR body:
+ 
+ ```markdown
+ ## Summary
+ 
++<Problem, demonstrable outcome, and whether the outcome is complete>
++Closes #... <when applicable>
++
+ <diagram, diff-sketch, or tree>
++
++## Before / After
++
++| Before | After |
++|---|---|
++| Previous behavior | New behavior |
++
++## Change Walkthrough
++
++| Area / Files | Change | Why |
++|---|---|---|
++| ... | ... | ... |
++
++<Mermaid diagram when it clarifies architecture or flow>
++
++## Verification
++
++| Command / Scenario | Observed Result | What It Proves |
++|---|---|---|
++| ... | ... | ... |
++
++<Screenshots, video, or profiling artifacts>
++<Material limitations and anything not exercised>
+ 
+ ## Evidence
+ 
+@@ -163,6 +284,30 @@
+ 
+ Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
+ 
++### Impact
++
++Use three subsections: New, Fixes, and Others. Write natural prose describing who benefits, what they can now do or which issue they no longer face, and why that matters. For example, "Added Y so that users can Z" or "Fixed issue Y which previously caused Z". Use before/after comparisons when useful, rather than forcing every impact into a table or an "As a X" formula.
++
++Assign impact points stable references such as N1, F1, and O1 so the walkthrough can refer back to them. Mark an empty subsection "None". State user impact only when supported by the diff or evidence. Distinguish an observed baseline from an inference based on the old code. Report a failing before-run only when it was actually captured.
++
++### Change Walkthrough
++
++Use a CodeRabbit-style grouped walkthrough: one row per coherent area, the relevant files, what changed, and why. This is a change summary, not a list of every file or a dependent-PR stack. Reference the relevant Impact point, such as N1 or F1, when that relationship is available from the diff or evidence. Otherwise explain the change and why directly, without inventing a connection. Link actual dependent PRs separately when they exist.
++
++### Verification
++
++Show concrete test run commands in shell blocks, including the working directory and relevant flags. Label a test scenario `(new)` only when the test was added by this change. For each run, use an Observation / Proves table stating what was observed and the behavior it establishes. Report counts, errors, warnings, or measurements when captured. Distinguish passed, failed, and not run. A command without its result is not verification evidence.
++
++State what was not exercised, such as real login, persistence, or production routing. For a foundation-only change, show its interface and a test or caller exercising it.
++
++For UI changes, attach before/after screenshots for visual differences and video for interactive flows. Include the scenario and relevant viewport or state. Use attachments or reviewer-accessible URLs. Local file paths alone are not PR attachments. If artifacts cannot be uploaded, state the limitation and where they are available locally.
++
++For performance changes, include flame charts when profiling helps explain the result. State the workload, environment, and measured before/after results. Link large profiling artifacts instead of embedding them in full.
++
++Write Limitations as bullet points, one material limitation or untested behavior per bullet.
++
++Put artifacts beside the claims they support. Use Evidence for supporting artifacts that are not already covered in Verification.
++
+ ### Merge Danger
+ 
+ Describe whether it's a one-way or two-way door. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
