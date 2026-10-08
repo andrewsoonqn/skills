@@ -1,11 +1,11 @@
 ---
 name: commit-pr
-description: Use when writing/reviewing commits, pushing, opening a pull request, or suggesting a branch name.
+description: Use when writing or reviewing commits, staging changes, or suggesting a branch name.
 ---
 
-# Commit / Push / PR
+# Commit
 
-Use this workflow whenever you commit, push, or open a PR.
+Use this workflow to stage and commit changes. Completion means the intended changes are committed and unrelated changes remain untouched. Use the `pr` skill for writing, opening, or updating pull requests. Pushing is a separate action requiring an explicit user request.
 
 ## Commit message conventions
 
@@ -59,17 +59,6 @@ Use this workflow whenever you commit, push, or open a PR.
 - Split into separate commits when the correct grouping is unclear.
 - Stage and commit one group at a time.
 - Do not use `git add -A` or `git add .` across groups.
-- Use `git rev-parse --abbrev-ref @{u}` to identify the branch's upstream.
-- Use `git remote -v` to list the repository's remotes.
-- Run `gh pr list --head <branch> --repo <owner/repo>` before opening a PR.
-- If a PR already exists, update it with `gh pr edit`.
-- Choose the base branch explicitly.
-- Confirm that the base exists on the target remote with `git ls-remote`.
-
-## PR body
-
-- Leave PR body paragraphs and bullets unwrapped. GitHub wraps them for
-  display.
 
 ## Steps
 
@@ -78,5 +67,4 @@ Use this workflow whenever you commit, push, or open a PR.
 1. Determine scope and grouping per Scope above, then stage and
    commit each group with a message per the conventions above (may be
    more than one commit).
-1. Push to the branch's real upstream.
-1. Open or update the PR against the confirmed base and remote.
+1. Inspect the committed diff and `git status`. Report the commit hashes and any remaining uncommitted changes. Stop after committing.
