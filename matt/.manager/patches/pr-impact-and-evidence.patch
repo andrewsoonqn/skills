@@ -24,7 +24,7 @@
 +
 +## Base PR template
 +
-+Use the following repository template as the base. Impact, Change Walkthrough, test commands and observation/proof tables, Artifacts, and Limitations are additions. Preserve the Summary, Description of Changes, Verification, Tests, and Checklist structure and its existing instructions. Apply repository-specific checklists only where applicable.
++Use the following repository template as the base. Impact, Change Walkthrough, test commands and verification bullets, Artifacts, and Limitations are additions. Preserve the Summary, Description of Changes, Verification, Tests, and Checklist structure and its existing instructions. Apply repository-specific checklists only where applicable.
 +
 +````markdown
 +<!--
@@ -85,7 +85,7 @@
 +<Concrete test run command, including working directory when needed>
 +```
 +
-+- <I ran or checked X using Y and observed Z, with actual output, counts, errors, or measurements>
++- <Ran or checked X using Y and observed Z, with actual output, counts, errors, or measurements>
 +
 +### Artifacts
 +
@@ -138,7 +138,16 @@
  
  ## Evidence
  
-@@ -163,6 +280,32 @@
+@@ -35,6 +152,8 @@
+ ## Sections
+ 
+ Skip all preambles and keep prose brief. Use the user's domain language from `GLOSSARY.md`.
++
++The examples below illustrate reporting style. Replace their scenarios, paths, counts, timings, and artifacts with evidence from the actual change. They are not results to copy into a PR.
+ 
+ ### Summary
+ 
+@@ -163,6 +282,162 @@
  
  Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
  
@@ -148,23 +157,153 @@
 +
 +Assign impact points stable references such as N1, F1, and O1 so the walkthrough can refer back to them. Mark an empty subsection "None". State user impact only when supported by the diff or evidence. Distinguish an observed baseline from an inference based on the old code. Report a failing before-run only when it was actually captured.
 +
++#### Impact examples
++
++Positive:
++
++```markdown
++#### New
++- **N1:** Added a requirement to identify where each new test's expected outcome comes from.
++
++#### Fixes
++- **F1:** Removed automatic TDD routing so ordinary implementation requests no longer select test-first development.
++
++#### Others
++- **O1:** Preserved existing checks, E2E verification, and repository-required tests.
++```
++
++Negative:
++
++```markdown
++- Updated testing instructions.
++- Improved the workflow.
++```
++
 +### Change Walkthrough
 +
 +Use a CodeRabbit-style grouped walkthrough: one row per coherent area, the relevant files, what changed, and why. This is a change summary, not a list of every file or a dependent-PR stack. Reference the relevant Impact point, such as N1 or F1, when that relationship is available from the diff or evidence. Otherwise explain the change and why directly, without inventing a connection. Link actual dependent PRs separately when they exist.
 +
 +Append `(new)` to each file path added by the change in the Change Walkthrough. Determine new files from the diff against the intended base, not from whether they are new to the reader. Leave modified, renamed, and deleted files unmarked.
 +
++#### Change Walkthrough examples
++
++Positive:
++
++```markdown
++| Area / Files | Change | Why / Impact |
++|---|---|---|
++| AGENTS.md | Require independent expectations for new tests. | N1 |
++| skills/matt/.manager/patches/implement-evidence-grounded-testing.patch (new), skills/matt/implement/SKILL.md | Replace automatic TDD selection with the global testing policy. | F1 |
++| skills/matt/.manager/content-lock.json | Record rebuilt skill hashes. | Let the manager detect unrecorded changes. |
++```
++
++Negative:
++
++```markdown
++| Area / Files | Change | Why / Impact |
++|---|---|---|
++| AGENTS.md (new) | Updated file. | N1, F1, O1 |
++| skills/matt/.manager/content-lock.json | Changed hashes. | Improve the user experience. |
++```
++
++The negative example marks a modified file as new and invents impact references and user benefits.
++
 +### Verification
 +
-+Show concrete test run commands in shell blocks, including the working directory and relevant flags. Label a test scenario `(new)` only when the test was added by this change. Report verification as bullet points. Write each bullet in first person: the action performed, how it was performed, and the observed result. Include the method that supports the claim, such as the command run, comparison made, or failure deliberately injected. Keep trivial change-scope statements in the Change Walkthrough instead of the verification bullets. Report counts, errors, warnings, or measurements when captured. Distinguish passed, failed, and not run. A command without its result is not verification evidence.
++Show concrete test run commands in shell blocks, including the working directory and relevant flags. Label a test scenario `(new)` only when the test was added by this change. Report verification as bullet points. Start each bullet with the action performed, then state how it was performed and the observed result. Omit the first-person subject. Include the method that supports the claim, such as the command run, comparison made, or failure deliberately injected. Keep trivial change-scope statements in the Change Walkthrough instead of the verification bullets. Report counts, errors, warnings, or measurements when captured. Distinguish passed, failed, and not run. A command without its result is not verification evidence.
++
++#### Verification examples
++
++Positive:
++
++````markdown
++```sh
++cd ~/.agents/skills
++./matt/.manager/manage.sh verify
++python3 matt/.manager/test-harnesses.py
++```
++
++- Compared every installed skill file before and after the rebuild. Diagnosis and code-review were byte-for-byte unchanged.
++- Ran the manager rebuild twice and compared the resulting file contents. Both rebuilds produced identical installations.
++- Deliberately supplied incompatible upstream PR-skill content and ran the update. It failed, and comparing installed files before and afterward showed no changes.
++- Ran the commands above. All 22 managed skills and 44 harness links passed verification.
++````
++
++Negative:
++
++```markdown
++- All tests passed.
++- Conflicting patch left the installation unchanged.
++- Only changed implement, ask-matt, and tdd.
++```
++
++The first two omit how the result was established. The last is a change-scope statement, not a verification result.
 +
 +State what was not exercised, such as real login, persistence, or production routing. For a foundation-only change, show its interface and a test or caller exercising it.
 +
 +For UI changes, attach before/after screenshots for visual differences and video for interactive flows. Include the scenario and relevant viewport or state. Use attachments or reviewer-accessible URLs. Local file paths alone are not PR attachments. If artifacts cannot be uploaded, state the limitation and where they are available locally.
 +
++#### UI evidence examples
++
++Positive:
++
++```markdown
++- Changed notification settings, saved, and reloaded at desktop and mobile widths. The saved values persisted, and the confirmation remained visible without overlapping the controls.
++
++Before: <attached screenshot>
++After: <attached screenshot>
++Interaction: <attached recording showing edit, save, and reload>
++```
++
++Negative:
++
++```markdown
++- UI looks good.
++- Screenshot: /tmp/after.png
++```
++
++The negative example gives no scenario or result, and a local path is not a reviewer-accessible attachment.
++
 +For performance changes, include flame charts when profiling helps explain the result. State the workload, environment, and measured before/after results. Link large profiling artifacts instead of embedding them in full.
 +
-+Write Limitations as bullet points, one material limitation or untested behavior per bullet.
++#### Performance evidence examples
++
++Positive:
++
++```markdown
++- Profiled the same 10,000-record import before and after the change. Median duration across five runs fell from 2.4s to 1.6s. The attached flame charts show the reduced time in parsing.
++```
++
++Negative:
++
++```markdown
++- Much faster now.
++- Import takes 1.6s.
++```
++
++The negative example omits the workload, comparison, and measurement method.
++
++Write Limitations as bullet points, one material limitation or untested behavior per bullet. Explain what the check is scoped to and what it cannot test. When a check was deliberately not run, state the reason for that decision and what remains unverified.
++
++#### Limitations examples
++
++Positive:
++
++```markdown
++- Structural checks are limited to document contents, so they cannot test future coding-agent behavior.
++- Mocked requests cannot test authentication against the live provider because they are only scoped to local request handling.
++- Due to the risk of modifying live records, chose not to run production imports. Verification used a local fixture, so production permissions and data compatibility remain unverified.
++```
++
++Negative:
++
++```markdown
++- Some things were not tested.
++- Production was not tested.
++- Everything should work.
++```
++
++The negative example omits scope and decision rationale, then makes an unsupported assurance.
 +
 +Put artifacts beside the claims they support. Use Evidence for supporting artifacts that are not already covered in Verification.
 +
