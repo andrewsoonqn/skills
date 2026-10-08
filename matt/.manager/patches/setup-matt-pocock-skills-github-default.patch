@@ -1,0 +1,11 @@
+--- a/setup-matt-pocock-skills/SKILL.md
++++ b/setup-matt-pocock-skills/SKILL.md
+@@ -39,7 +39,7 @@
+ 
+ > Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it. They need to know whether to call `gh issue create`, write a markdown file under `.scratch/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
+ 
+-Default posture: these skills were designed for GitHub. If a `git remote` points at GitHub, propose that. If a `git remote` points at GitLab (`gitlab.com` or a self-hosted host), propose GitLab. Otherwise (or if the user prefers), offer:
++Default posture: keep an issue tracker already established by repository instructions, workflow, or hosting. A GitHub remote settles GitHub; a GitLab remote (`gitlab.com` or a self-hosted host) settles GitLab. If exploration does not identify an existing issue tracker, select GitHub without asking. Offer the alternatives below only when the user asks to override the detected or default choice:
+ 
+ - **GitHub**: issues live in the repo's GitHub Issues (uses the `gh` CLI)
+ - **GitLab**: issues live in the repo's GitLab Issues (uses the [`glab`](https://gitlab.com/gitlab-org/cli) CLI)
