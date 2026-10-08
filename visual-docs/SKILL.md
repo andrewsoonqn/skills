@@ -22,8 +22,8 @@ or require sign-off just because the document supports review.
    Resolve `references/visual-authoring.md` relative to this skill directory,
    not the current working directory. It is the shared source for placement, syntax,
    components, review, source edits, and exports.
-2. Reuse the existing task folder under `.pi/docs/NN-slug/`.
-   Use `.mdx` for this compilation workflow. Ordinary Markdown does not need this workflow.
+2. Put the source at `docs/explanations/<descriptive-name>.mdx` and revise that file in place.
+   Ordinary Markdown does not need this compilation workflow.
 3. Compose the explanation using the intent guidance below and the shared reference's grammar.
 4. Validate with `vplan check`. Fix diagnostics and check the compiled visuals.
 5. Call `plannotator_mdx_review` with the original MDX `path`.

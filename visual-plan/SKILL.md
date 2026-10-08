@@ -11,6 +11,8 @@ original Plannotator HTML review workflow. Resolve this link relative to the ski
 Use this skill only for the planning-specific guidance below. It does not replace the planning
 method that produced the plan or grant permission to implement it.
 
+Put the source at `docs/visual-plans/<descriptive-name>.mdx` and revise that file in place.
+
 ## Compose the plan
 
 - **Lead with the structure.** Open with at most a one-paragraph context, then a Mermaid

@@ -5,10 +5,10 @@ Resolve links in this reference relative to this reference's directory.
 
 ## Source and workflow
 
-1. Reuse the task's existing `<workspace-root>/.pi/docs/NN-slug/` folder for source,
-   exports, supporting files, and revisions. Use the repository root in a Git repository,
-   otherwise the current working directory. For a new task, choose the next unused sequence
-   number, padded to at least two digits starting at `01`, and a lowercase kebab-case slug.
+1. Use the repository root as `<workspace-root>` in a Git repository, otherwise use the current
+   working directory. Put visual explanations at `docs/explanations/<descriptive-name>.mdx` and
+   visual plans at `docs/visual-plans/<descriptive-name>.mdx`. Use a descriptive kebab-case name,
+   keep generated files beside the source, and revise the same source file in place.
 2. Write `.mdx`. Begin with a single `# Title` heading. Do not use YAML frontmatter.
    Components need no imports.
 3. Run `vplan components` for the installed compiler's supported syntax.
@@ -18,7 +18,7 @@ Resolve links in this reference relative to this reference's directory.
 5. Call `plannotator_mdx_review` with the original MDX path:
 
    ```json
-   { "path": "/absolute/workspace/.pi/docs/NN-slug/plan.mdx", "open": false }
+   { "path": "/absolute/workspace/docs/explanations/system-overview.mdx", "open": false }
    ```
 
    The tool validates and compiles with VPlan, then starts original Plannotator's HTML
@@ -35,7 +35,7 @@ Resolve links in this reference relative to this reference's directory.
    can therefore change what an open review displays after refresh. Coordinate changes to shared files.
 
 The user-owned implementation is at
-`/Users/andrewsoon/dev/10-19_projects/12_open-source/plannotator`.
+`/Users/andrewsoon/dev/plannotator`.
 The Pi tool is loaded through `~/.pi/agent/extensions/plannotator-mdx.ts`.
 Its `/plannotator-mdx <path>` command explicitly opens a session-linked review.
 
@@ -48,7 +48,7 @@ change global Pi configuration as part of this skill.
 To compile without opening a browser:
 
 ```sh
-node /Users/andrewsoon/dev/10-19_projects/12_open-source/plannotator/bin/review-mdx.js /absolute/path/plan.mdx --compile-only
+node /Users/andrewsoon/dev/plannotator/bin/review-mdx.js /absolute/path/plan.mdx --compile-only
 ```
 
 Return the source and generated HTML links. If the user explicitly requests a standalone
@@ -232,6 +232,6 @@ Use static facts here and time series in `<Chart>`. Omit filler or invented metr
 
 The generated `<name>.plan.html` is the shareable document, separate from Plannotator's review UI.
 It contains the compiled rendering runtime. It does not include Plannotator feedback controls.
-Keep exports in the task folder and check them offline before describing them as self-contained.
+Keep exports beside their MDX source and check them offline before describing them as self-contained.
 Use [Static renders and exports](static-exports.md) for HTML, PDF, JPG, or a preview without review.
 Do not use VPlan's separate interactive review queue for this workflow.
