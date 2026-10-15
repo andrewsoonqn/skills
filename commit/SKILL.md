@@ -1,5 +1,5 @@
 ---
-name: commit-pr
+name: commit
 description: Use when writing or reviewing commits, staging changes, or suggesting a branch name.
 ---
 

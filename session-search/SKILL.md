@@ -6,13 +6,13 @@ description: Use when an answer may exist in a past coding-agent session, especi
 # Session Search
 
 Use `cass` to search local coding-agent histories. The usual binary is
-`~/.claude/bin/cass` (`cass.exe` on Windows). It is machine-local and must never
+`~/.local/bin/cass` (`cass.exe` on Windows). It is machine-local and must never
 be committed.
 
 Set this once in shell commands:
 
 ```bash
-CASS="${CASS:-$HOME/.claude/bin/cass}"
+CASS="${CASS:-$HOME/.local/bin/cass}"
 ```
 
 If that path is absent, try `command -v cass`. If the binary is still missing,
