@@ -11,7 +11,7 @@
 @@ -9,12 +9,185 @@
      url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
  ---
-
+ 
 -Use this template for writing the PR body:
 -
 -```markdown
@@ -20,7 +20,7 @@
 +1. Read the repository's PR template and the complete diff against the intended base. Preserve repository headings and checklists. Add the sections below within that structure where appropriate.
 +2. Identify the problem, demonstrable outcome, and whether the change achieves that outcome completely. Include closing issue references only when applicable.
 +3. Describe the user or system impact without N/F/O prefixes. Write Overview before Verification as a focused file-and-symbol tree in a `diff` fence: descriptive root, filenames by default, actual symbols with `//` role comments, and before/after behavior leaves for changed implementations.
-+4. Collect observed verification results and applicable artifacts. Keep the original automated commands/results/evidence format under Tests, collapsed in `<details>`. Add an optional app-use Walkthrough under Artifacts only when useful: photos/videos visible, written setup/actions/results/cleanup under "Try it yourself". Finish when each reported result has evidence and untested behavior is explicit.
++4. Collect observed verification results and applicable artifacts. Keep the original automated commands/results/evidence format under Tests, collapsed in `<details>`. Add an optional app-use Walkthrough under Artifacts only when useful: photos/videos visible, written setup/actions/results/cleanup under "Try it yourself". Finish when each reported result has evidence and untested behavior is explicit. Before publishing commits or creating/updating a PR, satisfy the Publication boundary below, including its staged/diff artifact check.
 +5. When asked to open or update a PR, identify the actual upstream repository, source remote and its repository owner, head branch, and explicit base; confirm the base and head exist on their intended remotes. Do not infer the source owner from a branch-name prefix. Run `gh pr list --head <branch> --repo <owner/repo> --state open --limit 100 --json number,url,headRefName,headRepositoryOwner,baseRefName` first. Establish lookup completeness before selecting a unique PR or concluding none exists: if the returned count reaches the requested limit, increase `--limit` and rerun until the returned count is strictly below the requested limit. If the lookup fails or completeness cannot be established, retain the draft and do not edit or create a PR. A larger fixed limit alone is not proof of completeness. The branch filter cannot distinguish forks: match `headRepositoryOwner.login`, `headRefName` and `baseRefName` against the intended source owner, head branch and explicit base before selecting a PR. Edit the single exact match by explicit number and target repository with `gh pr edit <number> --repo <owner/repo>`. If metadata is missing or several exact matches remain, retain the draft and report the ambiguity instead of guessing. If no exact match exists, create a PR with the explicit target repository, source head/fork and base; do not edit another owner's PR or a PR with a different base. Push only when explicitly requested. If the branch is not available remotely, report that blocker and retain the draft.
 +
 +Keep the rendered description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Link to supporting detail instead of repeating it. Leave PR paragraphs and bullets unwrapped.
@@ -35,7 +35,7 @@
 +-->
 +
  ## Summary
-
+ 
 +<!--
 +Provide a concise summary of what this pull request is addressing.
 +
@@ -194,28 +194,28 @@
 +</details>
 +
 +<Material limitations and anything not exercised>
-
+ 
  ## Evidence
-
+ 
 @@ -30,11 +203,13 @@
  **Blast Radius:** <one-word description>
-
+ 
  <optional: potential ramifications of merge>
 -```
 +````
-
+ 
  ## Sections
-
+ 
  Skip all preambles and keep prose brief. Use the user's domain language from `GLOSSARY.md`.
 +
 +The examples below illustrate reporting style. Replace their scenarios, paths, counts, timings, and artifacts with evidence from the actual change. They are not results to copy into a PR.
-
+ 
  ### Summary
-
-@@ -163,6 +338,188 @@
-
+ 
+@@ -163,8 +338,207 @@
+ 
  Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
-
+ 
 +### Impact
 +
 +Use three subsections: New, Fixes, and Others. Write natural prose describing who benefits, what they can now do or which issue they no longer face, and why that matters. For example, "Added Y so that users can Z" or "Fixed issue Y which previously caused Z". Use before/after comparisons when useful, rather than forcing every impact into a table or an "As a X" formula.
@@ -399,5 +399,134 @@
 +Put artifacts beside the claims they support. Use Evidence for supporting artifacts that are not already covered in Verification.
 +
  ### Merge Danger
-
+ 
  Describe whether it's a one-way or two-way door. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
+ 
+ The blast radius is the potential impact or scope of the changes introduced by this PR. Consider all possibilities. Examples are layout shift, breakages for consumers, mobile responsiveness, etc.
++
++
++## Publication boundary
++
++The deliverable is product source plus concise, human-readable verification and useful application evidence. Raw reviewer transcripts, model provenance JSON, agent-process/debug dumps and private session records stay outside tracked product docs and PR diffs. An evidence-accessibility request does not authorize committing those records. Preserve them privately outside the product checkout when needed. Do not delete existing user work or clean unrelated files. If an existing tracked artifact needs removal or history repair, retain the draft and obtain scope for that change.
++
++Summarize the review findings, fixes, actual commands/results and verification limits in the existing Tests format. Keep useful screenshots, recordings, profiling evidence, real application fixtures, configs, schemas, migrations and reviewer-facing docs when they explain or exercise the application. JSON, size, a docs directory, or the word "review" alone does not determine whether a file belongs. A product that handles agent transcripts may legitimately need synthetic transcript fixtures; state their application purpose and avoid private run records.
++
++Before a push or PR create/edit, run the bundled checker from this skill's directory against the actual product repository and intended base, with the exact draft body when publishing a PR:
++
++```sh
++python3 <skill-directory>/scripts/check-artifacts.py --repo <product-repository> --base <intended-base-ref> --pr-body <draft-body-file>
++```
++
++It inspects index blobs and complete changed files from the merge base to HEAD, including committed artifacts that are no longer staged. Resolve every flag deliberately before publication. An error/incomplete check also blocks publication. Read flagged content and its purpose. Keep process records outside the product diff, or retain a legitimate application artifact only with a concise explanation. For a reviewed false positive, rerun with `--allow <exact-path> <reported-sha256> <application-purpose-reason>` per flagged blob. Record that reason in the concise verification summary. The allowance is tied to exact bytes and must be reviewed again after changes; do not allow raw process records merely to make the check pass. The checker never removes or unstages files. Rerun after changes to the index, commits or draft. Inspect the final diff and draft yourself for process material that signatures miss, including links/attachments; do not publish raw dumps as an accessibility workaround.
++
++Coverage is heuristic, not perfect prevention or an enforced Git hook. Filename and text signatures catch common transcript/provenance/runtime dumps, with deliberate exceptions for legitimate app data. Ordinary files of any extension are eligible; there is no blanket JSON or docs ban. Files over 8 MiB require manual resolution. Binary contents, opaque/encoded/renamed or novel dump formats, untracked/unstaged files, external attachments and remote-only changes may escape detection. The body check is text-only and optional at the CLI level, required here when publishing a PR. This does not scan all repository history or prevent a caller from skipping the skill. Check the intended remote/base/head separately under the existing lookup rules. Exit 0 means no unresolved heuristic flags, not proof that all evidence is appropriate.
+--- /dev/null
++++ b/pr/scripts/check-artifacts.py
+@@ -0,0 +1,107 @@
++#!/usr/bin/env python3
++"""Flag likely agent audit artifacts in index, PR diff, and optional PR body.
++
++Read-only heuristic. Exit 0: resolved/clear, 1: unresolved flags, 2: check error.
++No extension/directory allowlist: application JSON and docs are valid inputs.
++"""
++import argparse
++import hashlib
++from pathlib import Path
++import re
++import subprocess
++import sys
++
++MAX_BYTES = 8 * 1024 * 1024
++
++
++def reasons(path, data):
++    found = []
++    name = Path(path).name.lower()
++    if re.search(r"(?:reviewer|review|agent|model)[-_. ](?:transcript|provenance|process[-_. ]dump|debug[-_. ]dump)(?:[-_. ]|$)", name):
++        found.append("audit-style filename")
++    if len(data) > MAX_BYTES:
++        return found + ["over 8 MiB: content requires manual inspection"]
++    if b"\0" in data:
++        return found  # Binary content is outside text-signature coverage.
++    text = data.decode("utf-8", errors="replace")
++    # Require repeated transcript framing or paired metadata, not ordinary prose
++    # mentioning reviewers, models, or application fields individually.
++    if len(re.findall(r'(?m)^\s*(?:assistant|user|system|tool)\s*(?:[:>]|\(analysis\)|\(final\))', text, re.I)) >= 3:
++        found.append("repeated conversation role framing")
++    roles = re.findall(r'"role"\s*:\s*"(?:assistant|system|tool|user)"', text)
++    if len(roles) >= 3 and re.search(r'"(?:content|tool_calls)"\s*:', text):
++        found.append("serialized conversation messages")
++    keys = set(re.findall(r'"([a-z_]+)"\s*:', text.lower()))
++    if keys & {"model", "model_id", "model_name"} and keys & {"reviewer_id", "agent_id", "reasoning_effort", "provider", "model_provider"}:
++        found.append("model/reviewer provenance metadata")
++    if ("<|im_start|>" in text or "<|start_header_id|>" in text
++            or ("agent_settled" in text and '"type"' in text)
++            or ("tool_call_id" in keys and keys & {"session_id", "agent_id"})):
++        found.append("agent runtime/transcript markers")
++    return found
++
++
++def git(repo, *args):
++    result = subprocess.run(["git", "-C", str(repo), *args], capture_output=True)
++    if result.returncode:
++        raise ValueError("Git check failed: " + result.stderr.decode(errors="replace").strip())
++    return result.stdout
++
++
++def check(args):
++    root = Path(git(args.repo, "rev-parse", "--show-toplevel").decode().strip())
++    # Resolve to immutable object IDs so revisions cannot be interpreted as options.
++    base = git(root, "rev-parse", "--verify", "--end-of-options", args.base + "^{commit}").decode().strip()
++    head = git(root, "rev-parse", "--verify", "HEAD^{commit}").decode().strip()
++    merge = git(root, "merge-base", base, head).decode().strip()
++    inputs = []
++    for scope, options, ref in (("staged", ["--cached"], ":"),
++                                ("diff", [merge, head], head + ":")):
++        paths = git(root, "diff", "--no-ext-diff", "--no-renames", "--name-only", "-z", "--diff-filter=ACM", *options, "--").split(b"\0")
++        for raw in paths:
++            if raw:
++                path = raw.decode(sys.getfilesystemencoding(), errors="surrogateescape")
++                inputs.append((scope, path, git(root, "cat-file", "blob", ref + path)))
++    if args.pr_body:
++        inputs.append(("body", str(args.pr_body), args.pr_body.read_bytes()))
++    allowed = {}
++    for path, sha, reason in args.allow:
++        if not re.fullmatch(r"[a-f0-9]{64}", sha) or len(reason.strip()) < 15:
++            raise ValueError("--allow needs PATH, exact SHA256, and a substantive application-purpose reason (15+ characters)")
++        allowed[(path, sha)] = reason
++    unresolved = 0
++    used = set()
++    for scope, path, data in inputs:
++        flags = reasons(path if scope != "body" else "", data)
++        if not flags:
++            continue
++        sha = hashlib.sha256(data).hexdigest()
++        key = (path, sha)
++        if key in allowed:
++            used.add(key)
++            print(f"RESOLVED {scope} {path!r} sha256={sha}: {allowed[key]}")
++        else:
++            unresolved += 1
++            print(f"FLAG {scope} {path!r} sha256={sha}: {'; '.join(flags)}")
++    if set(allowed) - used:
++        raise ValueError("unused/stale --allow: rerun and review the current flagged content")
++    print(f"Checked {len(inputs)} index/diff/body inputs; {unresolved} unresolved. Heuristics do not prove absence of process artifacts.")
++    return bool(unresolved)
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--repo", type=Path, default=Path.cwd())
++    parser.add_argument("--base", required=True, help="intended PR base ref; merge-base..HEAD is checked")
++    parser.add_argument("--pr-body", type=Path, help="also inspect the exact draft body")
++    parser.add_argument("--allow", nargs=3, action="append", default=[], metavar=("PATH", "SHA256", "REASON"))
++    args = parser.parse_args()
++    try:
++        return int(check(args))
++    except (OSError, ValueError) as error:
++        print(f"Artifact check incomplete: {error}", file=sys.stderr)
++        return 2
++
++
++if __name__ == "__main__":
++    sys.exit(main())

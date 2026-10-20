@@ -174,3 +174,40 @@ The manager requires macOS or Linux with `npx`, `python3`, and `patch`. Atomic d
 - The candidate must contain exactly the listed skills.
 - Skill directory names must match each `SKILL.md` frontmatter `name`.
 - Temporary agent fanout directories never enter `matt/`.
+
+## PR publication artifact boundary
+
+The PR patch installs `pr/scripts/check-artifacts.py` alongside the guidance, so
+local rebuilds and immutable cloud snapshots carry the same checker. Before a
+push or PR create/edit, run it with the product repository, intended base, and
+exact draft body as described in `pr/SKILL.md`. It reads index blobs and complete
+changed files from merge-base to HEAD, without altering any product files.
+Unresolved flags return 1; check errors return 2. Both require resolution before
+publication. An exact-path/SHA256/reason allowance records a reviewed legitimate
+application artifact, not blanket permission for an extension or directory.
+
+Raw process records belong outside tracked product documentation and PR diffs.
+Concise observed results and useful app evidence still belong in the established
+PR template. No JSON/fixture/config/schema/migration/docs ban is introduced.
+This is a heuristic invoked by the skill, not a Git hook or a guarantee that
+agents comply. Binary/encoded/novel records, untracked/unstaged content, links,
+attachments and remote-only changes need human/agent inspection. Text over 8 MiB
+is flagged for manual review. Historical snapshot versions remain unchanged;
+existing task pins keep their older instructions until a new task loads a new
+version. A live session may need explicit reload or restart for new guidance.
+
+Regression expectations derive from the requested publication boundary and the
+incident (process records committed as evidence), with synthetic records only:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 matt/.manager/test-pr-artifacts.py
+PYTHONDONTWRITEBYTECODE=1 python3 matt/.manager/test-pr-guidance.py
+PYTHONDONTWRITEBYTECODE=1 python3 matt/.manager/test-pr-snapshot.py
+```
+
+The artifact tests use real disposable Git indexes and commits to check committed
+and staged dumps, renamed files, a cleaned worktree over a dirty index, PR bodies,
+normal application JSON/config/schema/migration/docs, legitimate synthetic
+conversation fixtures with exact-byte resolution, stale exceptions, large files,
+missing inputs, missing bases and newline filenames. They test representative
+signatures and failure handling, not every possible process artifact format.
