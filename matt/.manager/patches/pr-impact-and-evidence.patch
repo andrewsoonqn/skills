@@ -12,13 +12,16 @@
      url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
  ---
 
+-Use this template for writing the PR body:
+-
+-```markdown
 +## Workflow
 +
 +1. Read the repository's PR template and the complete diff against the intended base. Preserve repository headings and checklists. Add the sections below within that structure where appropriate.
 +2. Identify the problem, demonstrable outcome, and whether the change achieves that outcome completely. Include closing issue references only when applicable.
 +3. Describe the user or system impact without N/F/O prefixes. Write Overview before Verification as a focused file-and-symbol tree in a `diff` fence: descriptive root, filenames by default, actual symbols with `//` role comments, and before/after behavior leaves for changed implementations.
 +4. Collect observed verification results and applicable artifacts. Keep the original automated commands/results/evidence format under Tests, collapsed in `<details>`. Add an optional app-use Walkthrough under Artifacts only when useful: photos/videos visible, written setup/actions/results/cleanup under "Try it yourself". Finish when each reported result has evidence and untested behavior is explicit.
-+5. When asked to open or update a PR, identify the actual upstream and remote, choose the base explicitly, and confirm it exists on the target remote. Run `gh pr list --head <branch> --repo <owner/repo>` first. Update an existing PR with `gh pr edit`, otherwise create it. Push only when explicitly requested. If the branch is not available remotely, report that blocker and retain the draft.
++5. When asked to open or update a PR, identify the actual upstream repository, source remote and its repository owner, head branch, and explicit base; confirm the base and head exist on their intended remotes. Do not infer the source owner from a branch-name prefix. Run `gh pr list --head <branch> --repo <owner/repo> --state open --json number,url,headRefName,headRepositoryOwner,baseRefName` first. The branch filter cannot distinguish forks: match `headRepositoryOwner.login`, `headRefName` and `baseRefName` against the intended source owner, head branch and explicit base before selecting a PR. Edit the single exact match by explicit number and target repository with `gh pr edit <number> --repo <owner/repo>`. If metadata is missing or several exact matches remain, retain the draft and report the ambiguity instead of guessing. If no exact match exists, create a PR with the explicit target repository, source head/fork and base; do not edit another owner's PR or a PR with a different base. Push only when explicitly requested. If the branch is not available remotely, report that blocker and retain the draft.
 +
 +Keep the rendered description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Link to supporting detail instead of repeating it. Leave PR paragraphs and bullets unwrapped.
 +
@@ -31,8 +34,8 @@
 +Keep the entire rendered PR description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Keep the outcome, essential changes, repeatable evidence and material limitations. Link to supporting detail instead of repeating it.
 +-->
 +
-+## Summary
-+
+ ## Summary
+
 +<!--
 +Provide a concise summary of what this pull request is addressing.
 +
@@ -134,12 +137,11 @@
 +
 +The earlier template and guidance remain below for later pruning. The base template above controls the PR structure.
 +
- Use this template for writing the PR body:
-
--```markdown
++Historical reference only. Do not use this retained template for new PR bodies; use the authoritative Base PR template above.
++
 +````markdown
- ## Summary
-
++## Summary
++
 +<Problem, demonstrable outcome, and whether the outcome is complete>
 +Closes #... <when applicable>
 +

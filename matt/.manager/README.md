@@ -98,6 +98,7 @@ Test without touching the real skill or contacting upstream:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 matt/.manager/test-pr-snapshot.py
+PYTHONDONTWRITEBYTECODE=1 python3 matt/.manager/test-pr-guidance.py
 ```
 
 The disposable fixture runs the real manager update, patch, validation, export,
@@ -112,6 +113,11 @@ and `CREDITS.md` when redistributing snapshots. The HumanLayer notice is from
 `humanlayer/skills` commit `653b6411c1f70c275a18e37673b042ff99f67ceb`;
 review licensing if upstream changes its terms. Earlier snapshot directories
 remain byte-for-byte immutable; current exports include both notices.
+
+`test-pr-guidance.py` checks the reviewed source contracts for owner/head/base
+matching, explicit-number PR edits, ambiguity handling and historical-template
+precedence. It accepts `--skill PATH` to check a particular immutable snapshot.
+These checks do not prove a model will obey the guidance or authorize live edits.
 
 A failed download, patch, or validation leaves the current installation unchanged. The final directory exchange is atomic and retains the previous tree until post-install verification passes.
 
