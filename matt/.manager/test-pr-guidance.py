@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the PR3 review contracts in rendered guidance, not model behavior."""
+"""Check publishing and template contracts in rendered guidance, not model behavior."""
 import argparse
 from pathlib import Path
 import re
@@ -16,10 +16,15 @@ def validate(skill):
     assert {"number", "headRefName", "headRepositoryOwner", "baseRefName"} <= set(fields), (
         "branch-only lookup cannot distinguish another fork owner or base"
     )
-    for flag in ("--head <branch>", "--repo <owner/repo>", "--state open"):
+    for flag in ("--head <branch>", "--repo <owner/repo>", "--state open", "--limit 100"):
         assert flag in lookup[1], f"PR lookup must include {flag}"
-    # These requirements come from the wrong-owner/base review finding. A
-    # branch-name prefix is not an authenticated GitHub repository identity.
+    assert "before selecting a unique PR or concluding none exists" in step
+    assert "returned count reaches the requested limit" in step
+    assert "increase `--limit` and rerun" in step
+    assert "strictly below the requested limit" in step
+    assert "completeness cannot be established" in step and "do not edit or create a PR" in step
+    assert "larger fixed limit alone is not proof" in step
+    # A branch-name prefix is not a GitHub repository identity.
     for field in ("headRepositoryOwner.login", "headRefName", "baseRefName"):
         assert f"`{field}`" in step, f"selection must inspect {field}"
     assert "match" in step.lower() and "explicit base" in step
@@ -45,4 +50,4 @@ if __name__ == "__main__":
         validate(args.skill)
     except (AssertionError, IndexError, StopIteration) as error:
         raise SystemExit(f"PR guidance regression: {error}")
-    print("PASS: owner/head/base lookup, explicit-number edit, ambiguity stop, historical-template precedence (source contracts only)")
+    print("PASS: complete owner/head/base lookup, explicit-number edit, incomplete/ambiguous lookup stop, historical-template precedence (source contracts only)")

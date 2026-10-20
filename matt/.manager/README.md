@@ -116,7 +116,9 @@ remain byte-for-byte immutable; current exports include both notices.
 
 `test-pr-guidance.py` checks the reviewed source contracts for owner/head/base
 matching, explicit-number PR edits, ambiguity handling and historical-template
-precedence. It accepts `--skill PATH` to check a particular immutable snapshot.
+precedence. It also checks that capped results trigger a larger query and that
+incomplete lookups cannot authorize edit/create. It accepts `--skill PATH` to
+check a particular immutable snapshot.
 These checks do not prove a model will obey the guidance or authorize live edits.
 
 A failed download, patch, or validation leaves the current installation unchanged. The final directory exchange is atomic and retains the previous tree until post-install verification passes.

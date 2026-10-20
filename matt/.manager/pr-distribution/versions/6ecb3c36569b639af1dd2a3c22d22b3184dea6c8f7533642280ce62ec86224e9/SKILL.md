@@ -1,0 +1,527 @@
+---
+name: pr
+description: "Use when writing a PR body or opening or updating a pull request."
+metadata:
+  credits:
+    skill: show-me
+    author: Dex Horthy
+    organisation: Humanlayer
+    url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
+---
+
+## Workflow
+
+1. Read the repository's PR template and the complete diff against the intended base. Preserve repository headings and checklists. Add the sections below within that structure where appropriate.
+2. Identify the problem, demonstrable outcome, and whether the change achieves that outcome completely. Include closing issue references only when applicable.
+3. Describe the user or system impact without N/F/O prefixes. Write Overview before Verification as a focused file-and-symbol tree in a `diff` fence: descriptive root, filenames by default, actual symbols with `//` role comments, and before/after behavior leaves for changed implementations.
+4. Collect observed verification results and applicable artifacts. Keep the original automated commands/results/evidence format under Tests, collapsed in `<details>`. Add an optional app-use Walkthrough under Artifacts only when useful: photos/videos visible, written setup/actions/results/cleanup under "Try it yourself". Finish when each reported result has evidence and untested behavior is explicit.
+5. When asked to open or update a PR, identify the actual upstream repository, source remote and its repository owner, head branch, and explicit base; confirm the base and head exist on their intended remotes. Do not infer the source owner from a branch-name prefix. Run `gh pr list --head <branch> --repo <owner/repo> --state open --limit 100 --json number,url,headRefName,headRepositoryOwner,baseRefName` first. Establish lookup completeness before selecting a unique PR or concluding none exists: if the returned count reaches the requested limit, increase `--limit` and rerun until the returned count is strictly below the requested limit. If the lookup fails or completeness cannot be established, retain the draft and do not edit or create a PR. A larger fixed limit alone is not proof of completeness. The branch filter cannot distinguish forks: match `headRepositoryOwner.login`, `headRefName` and `baseRefName` against the intended source owner, head branch and explicit base before selecting a PR. Edit the single exact match by explicit number and target repository with `gh pr edit <number> --repo <owner/repo>`. If metadata is missing or several exact matches remain, retain the draft and report the ambiguity instead of guessing. If no exact match exists, create a PR with the explicit target repository, source head/fork and base; do not edit another owner's PR or a PR with a different base. Push only when explicitly requested. If the branch is not available remotely, report that blocker and retain the draft.
+
+Keep the rendered description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Link to supporting detail instead of repeating it. Leave PR paragraphs and bullets unwrapped.
+
+## Base PR template
+
+Use the following repository template as the base. Impact, Overview, test commands and verification bullets, Artifacts, and Limitations are additions. Preserve the Summary, Description of Changes, Verification, Tests, and Checklist structure and its existing instructions. Apply repository-specific checklists only where applicable.
+
+````markdown
+<!--
+Keep the entire rendered PR description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Keep the outcome, essential changes, repeatable evidence and material limitations. Link to supporting detail instead of repeating it.
+-->
+
+## Summary
+
+<!--
+Provide a concise summary of what this pull request is addressing.
+
+If this PR closes any issues, list them here by number (e.g., Closes #123).
+
+What is the demonstrable outcome of this PR? And is it complete or needs future changes to achieve these outcomes? State in natural prose.
+-->
+
+Closes #
+
+## Description of Changes
+
+<!--
+Detail the specific changes made in this pull request. Explain the problem addressed and how it was resolved. If applicable, provide before and after comparisons, screenshots, or any relevant details to help reviewers understand the changes easily.
+-->
+
+### Impact
+
+#### New
+
+- <Added Y so that users can Z.>
+
+#### Fixes
+
+- <Fixed issue Y which previously caused Z.>
+
+#### Others
+
+- <Other meaningful user or system outcomes.>
+
+### Overview
+
+Simplified behavior leaves; file/symbol names come from the actual base-to-head diff. The root describes the change area, not the repository path.
+
+```diff
+ <change area>
+ └── <file.ext>
+     └── <existingSymbol> // <role>
+-        └── <previous behavior>
++        └── <new behavior>
+```
+
+Use filenames by default; include only the shortest path needed to disambiguate duplicate basenames. Mark file/symbol nodes `+` or `-` only when actually added or removed. Keep retained nodes unmarked; omit incidental test symbols.
+
+## Verification
+
+### Tests
+
+<details>
+<summary>Automated test evidence</summary>
+
+<!--
+Give repeatable commands, observed results and the behavior each proves. State what was not exercised, such as real login, persistence or production routing. For a foundation-only change, show its interface and a test or caller exercising it. Be concise
+-->
+
+**<Test scenario>** <append (new) only for a newly added test>
+
+```sh
+<Concrete test run command, including working directory when needed>
+```
+
+- <Ran or checked X using Y and observed Z, with actual output, counts, errors, or measurements>
+
+</details>
+
+### Artifacts
+
+<Screenshots or video for UI changes. Flame charts when profiling is relevant.>
+
+#### Walkthrough (optional)
+
+<Photos/videos of the real app experience stay visible here, outside details. Label fixture/synthetic data and provide reviewer-accessible media URLs.>
+
+<details>
+<summary>Try it yourself</summary>
+
+**Setup:** <Exact existing launch/setup script, prerequisites, test login or synthetic roles, entry URL and readiness cue. State if data/auth/services are simulated.>
+
+1. <Reach the feature through the actual app's controls or user-facing CLI.> **Visible result:** <What appears.>
+2. <Perform the meaningful interaction or role change.> **Visible result:** <What changes; reopen/reload or cross-check when needed.>
+
+**Cleanup:** <Stop only processes launched for this walkthrough and reset only its disposable data; retain the media/evidence.>
+
+<Include setup instructions, actions, expected/observed results, captions/explanations and cleanup inside this block. Do not substitute unit-test commands for app use or invent scripts, accounts, credentials or execution results.>
+
+</details>
+
+### Limitations
+
+- <Material limitation or behavior not exercised>
+
+### Checklist
+
+- [ ] Documentation has been updated where applicable, including docstrings for API changes.
+- [ ] Go code passes formatting and correctness checks (`make fmt` to format, `make lint` to verify).
+````
+
+## Retained template reference
+
+The earlier template and guidance remain below for later pruning. The base template above controls the PR structure.
+
+Historical reference only. Do not use this retained template for new PR bodies; use the authoritative Base PR template above.
+
+````markdown
+## Summary
+
+<Problem, demonstrable outcome, and whether the outcome is complete>
+Closes #... <when applicable>
+
+<diagram, diff-sketch, or tree>
+
+## Before / After
+
+| Before | After |
+|---|---|
+| Previous behavior | New behavior |
+
+## Overview
+
+Simplified behavior leaves; file/symbol names come from the actual base-to-head diff. The root describes the change area, not the repository path.
+
+```diff
+ <change area>
+ └── <file.ext>
+     └── <existingSymbol> // <role>
+-        └── <previous behavior>
++        └── <new behavior>
+```
+
+Use filenames by default; include only the shortest path needed to disambiguate duplicate basenames. Mark file/symbol nodes `+` or `-` only when actually added or removed. Keep retained nodes unmarked; omit incidental test symbols.
+
+## Verification
+
+### Tests
+
+<details>
+<summary>Automated test evidence</summary>
+
+- <Action performed, actual command, observed result and verification boundary>
+
+</details>
+
+### Artifacts
+
+<Screenshots, video, or profiling artifacts>
+
+#### Walkthrough (optional)
+
+<Photos/videos remain visible outside details.>
+
+<details>
+<summary>Try it yourself</summary>
+
+<All written setup, app-use steps, visible results and cleanup; no unit-test command walkthrough>
+
+</details>
+
+<Material limitations and anything not exercised>
+
+## Evidence
+
+- **Before:** <screenshot/output/failing test run>
+  **After:** <screenshot/output/passing test run>
+
+## Merge Danger
+
+**Door:** <one-way or two-way>
+
+<optional: description>
+
+**Blast Radius:** <one-word description>
+
+<optional: potential ramifications of merge>
+````
+
+## Sections
+
+Skip all preambles and keep prose brief. Use the user's domain language from `GLOSSARY.md`.
+
+The examples below illustrate reporting style. Replace their scenarios, paths, counts, timings, and artifacts with evidence from the actual change. They are not results to copy into a PR.
+
+### Summary
+
+Pick the smallest view that makes the key point clear.
+
+- Show logic or an algorithm as pseudocode:
+
+```text
+on(save)
+  if content is unchanged
+    return cached result
+  write new content
+  return fresh result
+```
+
+- Show runtime control flow as a call tree:
+
+```text
+submitForm
+  createSession
+    persistPrompt
+    launchAgent
+  navigateToSession
+```
+
+- Show UI structure as a component tree, including state and module boundaries that matter:
+
+```text
+<SessionPage> (apps/example/src/routes/session.tsx)
+  useSessionEvents()
+  <SessionToolbar>
+    <RunSkillButton> (packages/ui)
+```
+
+- Show file responsibility or a broad refactor as a shallow file tree:
+
+```text
+src/
+├── commands/       # parses user actions
+├── sessions/       # owns session state
+└── transport/      # sends API requests
+```
+
+- Show component interaction, control flow, or data flow with Mermaid:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI
+    participant Daemon
+    User->>UI: choose command
+    UI->>Daemon: send expanded prompt
+    Daemon-->>UI: stream result
+```
+
+- Use `diff` when the point is what changes and the surrounding shape already exists. Match the diff shape to the topic.
+
+For a component change:
+
+```diff
+ <SessionPage>
+   useSessionEvents()
+   <SessionToolbar>
++    <RunSkillButton />
+   <SessionTimeline>
++    <SkillResultCard />
+```
+
+For a file-layout change:
+
+```diff
+ src/
+ ├── commands/
++│   └── show-me.ts       # expands the slash command
+ ├── sessions/
+-└── transport.ts
++└── transport/
++    ├── client.ts
++    └── stream.ts
+```
+
+For a call-tree or call-stack change:
+
+```diff
+ submitForm
+   createSession
+     persistPrompt
++    expandSkillMention
+     launchAgent
+-  navigateToSession
++  navigateToSession
++    subscribeToEvents
+```
+
+For a state or control-flow change:
+
+```diff
+ on(save)
+-  write content
++  if content is unchanged
++    return cached result
++  write new content
++  invalidate cache
+```
+
+- Show the whole block when most of it is new, when omitted context would hide ownership or order, or when the user needs a copyable target shape:
+
+```ts
+function expandSkill(command: string): string {
+  const skillName = command.slice(1);
+  return `use the ${skillName} skill`;
+}
+```
+
+#### Guidance
+
+Place each visual next to the short text it supports. Keep only the calls, files, props, states, and boundaries needed to answer the user's current question or the options to resolve the current discussion point.
+
+You may use one of these, you may use several, it is unlikely you will use all of them. Use your judgement and don't overwhelm the user.
+
+### Evidence
+
+Concrete evidence that the change works. Show a before and after.
+
+Screenshots are S-tier - when the environment is set up for it and the change is visual.
+
+Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
+
+### Impact
+
+Use three subsections: New, Fixes, and Others. Write natural prose describing who benefits, what they can now do or which issue they no longer face, and why that matters. For example, "Added Y so that users can Z" or "Fixed issue Y which previously caused Z". Use before/after comparisons when useful, rather than forcing every impact into a table or an "As a X" formula.
+
+Retain the New, Fixes, and Others headings and mark an empty subsection "None". Use plain bullets without N/F/O prefixes or cross-references. State user impact only when supported by the diff or evidence. Distinguish an observed baseline from an inference based on the old code. Report a failing before-run only when it was actually captured.
+
+#### Impact examples
+
+Positive:
+
+```markdown
+#### New
+- Added a requirement to identify where each new test's expected outcome comes from.
+
+#### Fixes
+- Removed automatic TDD routing so ordinary implementation requests no longer select test-first development.
+
+#### Others
+- Preserved existing checks, E2E verification, and repository-required tests.
+```
+
+Negative:
+
+```markdown
+- Updated testing instructions.
+- Improved the workflow.
+```
+
+### Overview
+
+Use a focused file-and-symbol tree in a `diff` fence instead of the walkthrough table. Place Overview before Verification. Root each small tree in a descriptive change area, such as "Order creation fixes"; this is a semantic label, not a repository directory or invented symbol. Derive file labels and symbols from the complete diff against the intended base and relevant source. Use filenames by default; use only the shortest disambiguating path for duplicate basenames. Group coherent changes and omit repository directory trees and unrelated files. Put concise `//` role comments beside actual symbols. Explain the purpose without N/F/O prefixes or references. Link dependent PRs separately.
+
+Keep file/symbol nodes unmarked when they exist in both base and head. For the same symbol with a changed implementation, put `-` and `+` before the old/new behavior leaves underneath it. Mark file/function/class nodes `+` or `-` only when the actual base-to-head diff proves they were added or removed; new functionality should be shown that way. This replaces `(new)` path labels. Do not enumerate incidental test symbols; keep automated coverage in Tests unless a test harness itself is the functionality being explained.
+
+Behavior leaves are explanations, not verbatim source: label them **simplified behavior**. Never invent symbols for those descriptions or present a schematic tree as an actual source diff.
+
+#### Overview examples
+
+The Order event fix changes an existing symbol. These filenames/symbols are real; the root is descriptive and the behavior leaves are simplified. Neither the existing file nor its existing function gets a `+` marker.
+
+```diff
+ Order event delivery
+ └── encode.go
+     └── encode // builds event payloads
+-        └── status event omits previous_courier_id
++        └── status event retains previous_courier_id
+```
+
+The PR158 fixture launcher adds a real file and functionality. These added file/class/function nodes are marked `+`; unrelated test symbols are omitted.
+
+```diff
+ Local Order UI preview
++└── fixture-preview.py
++    ├── Preview // serves in-memory demo data and role controls
++    └── main // launches the fixture API and existing frontend
+```
+
+Avoid full paths where a filename identifies the file, plus/minus markers on retained nodes, and simplified behavior disguised as a literal symbol.
+
+### Verification
+
+Keep automated Tests in its existing evidence format, inside `<details>` with `<summary>Automated test evidence</summary>` and blank lines around Markdown content. Preserve actual commands/results and test boundaries; do not replace them with human demo steps or invent executed tests.
+
+Show concrete test run commands in shell blocks, including the working directory and relevant flags. Label a test scenario `(new)` only when the test was added by this change. Report verification as bullet points. Start each bullet with the action performed, then state how it was performed and the observed result. Omit the first-person subject. Include the method that supports the claim, such as the command run, comparison made, or failure deliberately injected. Keep trivial change-scope statements in the Overview instead of the verification bullets. Report counts, errors, warnings, or measurements when captured. Distinguish passed, failed, and not run. A command without its result is not verification evidence.
+
+#### Verification examples
+
+Positive:
+
+````markdown
+<details>
+<summary>Automated test evidence</summary>
+
+```sh
+cd ~/.agents/skills
+./matt/.manager/manage.sh verify
+python3 matt/.manager/test-harnesses.py
+```
+
+- Compared every installed skill file before and after the rebuild. Diagnosis and code-review were byte-for-byte unchanged.
+- Ran the manager rebuild twice and compared the resulting file contents. Both rebuilds produced identical installations.
+- Deliberately supplied incompatible upstream PR-skill content and ran the update. It failed, and comparing installed files before and afterward showed no changes.
+- Ran the commands above. All 22 managed skills and 44 harness links passed verification.
+
+</details>
+````
+
+Negative:
+
+```markdown
+- All tests passed.
+- Conflicting patch left the installation unchanged.
+- Only changed implement, ask-matt, and tdd.
+```
+
+The first two omit how the result was established. The last is a change-scope statement, not a verification result.
+
+State what was not exercised, such as real login, persistence, or production routing. For a foundation-only change, show its interface and a test or caller exercising it.
+
+#### Optional Artifacts → Walkthrough
+
+Add this only when a reviewer can usefully experience the real app or its supported demo mode. Omit it for changes with no useful runnable experience. This is app setup and use, not another unit-test command list; Tests remains the automated evidence section.
+
+Under Walkthrough, keep reviewer-accessible photos/videos visible outside `<details>`. Put all written setup, prerequisites, login/synthetic-role instructions, app entry steps, actions, expected/observed results, captions/explanations and cleanup inside `<details><summary>Try it yourself</summary>`, with blank lines so GitHub renders the Markdown correctly.
+
+Inspect the actual launch path and existing setup/fixture scripts first. Name real commands, dependencies, URLs, role controls and readiness cues; never invent accounts, passwords, helpers or evidence. If a safe script is needed during authorized implementation, provide one; for a description-only task, state missing setup rather than pretending it exists. Use a disposable instance, data directory or test account when supported, and do not drive someone else's active session. Present each meaningful app action with a visible result; when persistence matters, reopen/reload or use a suitable read-only cross-check. Distinguish expected reviewer outcomes from behavior actually observed. Stop only processes the walkthrough launched, reset only its disposable state, and keep proof artifacts.
+
+Adapt principles from these references, not their entire agent harness; they are guidance links, not skill/tool dependencies:
+
+- [Pstack create-note journey](https://github.com/cursor/plugins/blob/main/pstack/skills/create-verification-skill/references/feature-map-example/create-note.md): entry path, setup, action → visible result, second-view confirmation and cleanup.
+- [Pstack verification-skill guidance](https://github.com/cursor/plugins/blob/main/pstack/skills/create-verification-skill/SKILL.md): inspect the real launch/drive/observe/isolate surfaces and preserve evidence after cleanup.
+- [Pstack feature-map example](https://github.com/cursor/plugins/blob/main/pstack/automations/benny/skills/reproduce-and-fix-issues/references/feature-map.example.md): preconditions, relevant states, visible evidence and cross-checks.
+- [FoC PR158 fixture launcher](https://github.com/AY2627S1-CS3219-P1/FoC/blob/049157b4f346b1ef0e8af9de9bc7146fd274bcf3/frontend/scripts/fixture-preview.py): a concrete Python 3/npm example with requester/courier/suspended roles, simulated in-memory data, no real credentials, printed frontend and controls URLs, and shutdown cleanup. Its presence is specific to that repo/revision, not assumed in other projects.
+
+The PR158 pattern is `npm ci` in `frontend`, then `python3 frontend/scripts/fixture-preview.py` from the repository root. The printed controls URL switches synthetic roles and can lose the next creation response. Do not run that fixture or report its recorded results merely because this skill links it. A simulated demo does not establish real authentication or live-service behavior.
+
+For UI changes, attach before/after screenshots for visual differences and video for interactive flows. Include the scenario and relevant viewport or state. Use attachments or reviewer-accessible URLs. Local file paths alone are not PR attachments. If artifacts cannot be uploaded, state the limitation and where they are available locally.
+
+#### UI evidence examples
+
+Positive:
+
+```markdown
+- Changed notification settings, saved, and reloaded at desktop and mobile widths. The saved values persisted, and the confirmation remained visible without overlapping the controls.
+
+Before: <attached screenshot>
+After: <attached screenshot>
+Interaction: <attached recording showing edit, save, and reload>
+```
+
+Negative:
+
+```markdown
+- UI looks good.
+- Screenshot: /tmp/after.png
+```
+
+The negative example gives no scenario or result, and a local path is not a reviewer-accessible attachment.
+
+For performance changes, include flame charts when profiling helps explain the result. State the workload, environment, and measured before/after results. Link large profiling artifacts instead of embedding them in full.
+
+#### Performance evidence examples
+
+Positive:
+
+```markdown
+- Profiled the same 10,000-record import before and after the change. Median duration across five runs fell from 2.4s to 1.6s. The attached flame charts show the reduced time in parsing.
+```
+
+Negative:
+
+```markdown
+- Much faster now.
+- Import takes 1.6s.
+```
+
+The negative example omits the workload, comparison, and measurement method.
+
+Write Limitations as bullet points, one material limitation or untested behavior per bullet. Explain what the check is scoped to and what it cannot test. When a check was deliberately not run, state the reason for that decision and what remains unverified.
+
+#### Limitations examples
+
+Positive:
+
+```markdown
+- Structural checks are limited to document contents, so they cannot test future coding-agent behavior.
+- Mocked requests cannot test authentication against the live provider because they are only scoped to local request handling.
+- Due to the risk of modifying live records, chose not to run production imports. Verification used a local fixture, so production permissions and data compatibility remain unverified.
+```
+
+Negative:
+
+```markdown
+- Some things were not tested.
+- Production was not tested.
+- Everything should work.
+```
+
+The negative example omits scope and decision rationale, then makes an unsupported assurance.
+
+Put artifacts beside the claims they support. Use Evidence for supporting artifacts that are not already covered in Verification.
+
+### Merge Danger
+
+Describe whether it's a one-way or two-way door. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
+
+The blast radius is the potential impact or scope of the changes introduced by this PR. Consider all possibilities. Examples are layout shift, breakages for consumers, mobile responsiveness, etc.
