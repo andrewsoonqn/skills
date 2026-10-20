@@ -29,7 +29,8 @@ The tracked distribution is `matt/.manager/pr-distribution/`:
 
 - `latest.json` selects a version, the SHA256 of its exact `manifest.json` bytes.
 - `versions/<version>/` contains `manifest.json`, the unchanged rendered skill
-  files, and the upstream MIT `LICENSE`. The manifest records byte counts,
+  files, the Matt MIT `LICENSE`, and the HumanLayer MIT `LICENSE.show-me` for
+  copied show-me material. The manifest records byte counts,
   SHA256 hashes, the upstream lock record, and PR patch hashes.
 - Versions are immutable and retained when a later update changes the skill.
   Repeated exports of identical inputs produce identical files and version IDs.
@@ -102,11 +103,15 @@ PYTHONDONTWRITEBYTECODE=1 python3 matt/.manager/test-pr-snapshot.py
 The disposable fixture runs the real manager update, patch, validation, export,
 and atomic replacement with a fake installer transport. It checks reproducibility,
 update propagation, historical versions, task pinning, tampering/incomplete
-rejection, and preservation after a failed upstream update. The initial real
+rejection (with specific failure reasons and no tracebacks), license tampering,
+and preservation after a failed upstream update. The initial real
 snapshot can be bootstrapped after validating the existing installation with:
 `python3 matt/.manager/pr-snapshot.py export`. Normal future rebuilds need no
-separate export command. Preserve `pr-upstream-LICENSE` and `CREDITS.md` when
-redistributing snapshots; review licensing if upstream changes its terms.
+separate export command. Preserve `pr-upstream-LICENSE`, `pr-show-me-LICENSE`,
+and `CREDITS.md` when redistributing snapshots. The HumanLayer notice is from
+`humanlayer/skills` commit `653b6411c1f70c275a18e37673b042ff99f67ceb`;
+review licensing if upstream changes its terms. Earlier snapshot directories
+remain byte-for-byte immutable; current exports include both notices.
 
 A failed download, patch, or validation leaves the current installation unchanged. The final directory exchange is atomic and retains the previous tree until post-install verification passes.
 

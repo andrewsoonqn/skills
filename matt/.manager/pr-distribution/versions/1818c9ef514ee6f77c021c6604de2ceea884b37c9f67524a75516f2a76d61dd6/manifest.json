@@ -1,0 +1,40 @@
+{
+  "files": {
+    "CREDITS.md": {
+      "bytes": 604,
+      "sha256": "a7a087127665d7298a72280ef6e19c41ad8404523712a788c8dc3ab414bc2497"
+    },
+    "LICENSE": {
+      "bytes": 1068,
+      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+    },
+    "LICENSE.show-me": {
+      "bytes": 1067,
+      "sha256": "5f13c18ea00ea5c1384f41745feeca774079164f7f59a92e4ac0899ad217b26f"
+    },
+    "SKILL.md": {
+      "bytes": 16081,
+      "sha256": "ec77284da8fc191397c37c32decacbebaebeeeaaf154e3ca24dfb06e69af33d3"
+    },
+    "agents/openai.yaml": {
+      "bytes": 93,
+      "sha256": "2295b586624db4ef546f3fd4695492f039d941a46d8a1593a702ce3ca511b8ad"
+    }
+  },
+  "provenance": {
+    "license_source": "https://github.com/mattpocock/skills/blob/main/LICENSE",
+    "patches": {
+      "pr-impact-and-evidence.patch": "ba62ea7db4052465acf53116f99152b5352d69985f4d16147d6677453af769f9"
+    },
+    "show_me_license_source": "https://github.com/humanlayer/skills/blob/653b6411c1f70c275a18e37673b042ff99f67ceb/LICENSE",
+    "source_repository": "https://github.com/andrewsoonqn/skills",
+    "upstream": {
+      "computedHash": "22a15d4d469344b38e03eb0e95772478393975836289393b1bad3c0febcdc679",
+      "skillPath": "skills/engineering/pr/SKILL.md",
+      "source": "mattpocock/skills",
+      "sourceType": "github"
+    }
+  },
+  "schema": 1,
+  "skill": "pr"
+}

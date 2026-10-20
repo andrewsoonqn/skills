@@ -92,15 +92,17 @@ def snapshot(manager):
             raise ValueError("skill export does not follow symlinks")
         if p.is_file():
             files[safe_path(p.relative_to(skill).as_posix())] = read_file(p)
-    if "LICENSE" in files:
-        raise ValueError("review upstream skill LICENSE before replacing distribution license")
+    if {"LICENSE", "LICENSE.show-me"}.intersection(files):
+        raise ValueError("review upstream skill licenses before replacing distribution licenses")
     files["LICENSE"] = read_file(manager / "pr-upstream-LICENSE")
+    files["LICENSE.show-me"] = read_file(manager / "pr-show-me-LICENSE")
     lock = json.loads(read_file(manager / "skills-lock.json"))["skills"]["pr"]
     patches = {p.name: digest(read_file(p)) for p in sorted((manager / "patches").glob("pr-*.patch"))}
     manifest = encoded({"schema": 1, "skill": "pr", "provenance": {
         "upstream": lock, "patches": patches,
         "source_repository": "https://github.com/andrewsoonqn/skills",
         "license_source": "https://github.com/mattpocock/skills/blob/main/LICENSE",
+        "show_me_license_source": "https://github.com/humanlayer/skills/blob/653b6411c1f70c275a18e37673b042ff99f67ceb/LICENSE",
     }, "files": {n: {"sha256": digest(b), "bytes": len(b)} for n, b in sorted(files.items())}})
     version = digest(manifest)
     validate_manifest(manifest, version)

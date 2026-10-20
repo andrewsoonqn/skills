@@ -14,9 +14,14 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
-def run(argv, success=True, env=None):
+def run(argv, success=True, env=None, expect=None):
     result = subprocess.run([str(a) for a in argv], capture_output=True, text=True, env=env)
-    assert (result.returncode == 0) == success, result.stdout + result.stderr
+    output = result.stdout + result.stderr
+    assert (result.returncode == 0) == success, output
+    if not success:
+        assert expect, "negative tests must name the expected failure reason"
+        assert expect in output, f"expected {expect!r} in: {output}"
+        assert "Traceback (most recent call last)" not in output, output
     return result
 
 
@@ -73,27 +78,36 @@ shutil.copy2(source/'skills-lock.json', pathlib.Path.cwd()/'skills-lock.json')
 
     revision1, revision2 = "a" * 40, "b" * 40
     task = root / "task/pr"
-    def load(destination, revision=revision1, success=True):
+    def load(destination, revision=revision1, success=True, expect=None):
         return run(["python3", loader, "load", "--source", distribution, "--revision", revision,
-                    "--destination", destination], success)
+                    "--destination", destination], success, expect=expect)
     load(task)
     assert (task / "SKILL.md").read_bytes() == expected
     load(task)  # repeat invocation verifies and reuses the pin
-    load(root / "branch-ref", revision="main", success=False)
+    load(root / "branch-ref", revision="main", success=False, expect="full immutable Git commit SHA")
     assert not (root / "branch-ref").exists()
 
     snapshot_skill = distribution / "versions" / version1 / "SKILL.md"
     snapshot_skill.write_bytes(expected + b'tampered')
-    load(root / "tampered", success=False)
+    load(root / "tampered", success=False, expect="snapshot file hash/size mismatch: SKILL.md")
     assert not (root / "tampered").exists()
     snapshot_skill.unlink()
-    load(root / "incomplete", success=False)
+    load(root / "incomplete", success=False,
+         expect=f"expected regular file: {snapshot_skill}")
     assert not (root / "incomplete").exists()
     snapshot_skill.write_bytes(expected)
+    notice = distribution / "versions" / version1 / "LICENSE.show-me"
+    notice_bytes = (manager / "pr-show-me-LICENSE").read_bytes()
+    assert notice.read_bytes() == notice_bytes
+    notice.write_bytes(notice_bytes + b'tampered license')
+    load(root / "tampered-license", success=False,
+         expect="snapshot file hash/size mismatch: LICENSE.show-me")
+    assert not (root / "tampered-license").exists()
+    notice.write_bytes(notice_bytes)
     # A model/user cannot silently switch an existing task to another commit.
-    load(task, revision2, success=False)
+    load(task, revision2, success=False, expect="task already pinned to another revision")
     (task / "SKILL.md").write_bytes(b'tampered task')
-    load(task, success=False)
+    load(task, success=False, expect="snapshot file hash/size mismatch: SKILL.md")
     (task / "SKILL.md").write_bytes(expected)
 
     # A real manager update propagates a changed disposable fixture only.
@@ -113,8 +127,8 @@ shutil.copy2(source/'skills-lock.json', pathlib.Path.cwd()/'skills-lock.json')
     previous = (skill / "SKILL.md").read_bytes()
     pointer = (distribution / "latest.json").read_bytes()
     (upstream / "pr/SKILL.md").write_text('broken upstream\n')
-    run(["sh", manage, "update"], success=False, env=env)
+    run(["sh", manage, "update"], success=False, env=env, expect="hunks failed")
     assert (skill / "SKILL.md").read_bytes() == previous
     assert (distribution / "latest.json").read_bytes() == pointer
 
-print('PASS: deterministic export/update, patched fixture propagation, original-version retention, immutable task pins, tampering/incomplete rejection, failed-update preservation')
+print('PASS: deterministic export/update, patched fixture propagation, original-version retention, immutable task pins, specific tampering/license/incomplete failures without tracebacks, failed-update preservation')
