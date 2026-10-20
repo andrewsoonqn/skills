@@ -377,11 +377,8 @@ build_candidate() {
   }
   cp -R "$installed/". "$candidate_dir/"
 
-  cp "$manager_dir/manage.sh" "$candidate_dir/.manager/manage.sh"
-  cp "$manager_dir/README.md" "$candidate_dir/.manager/README.md"
-  cp "$manager_dir/test-harnesses.py" "$candidate_dir/.manager/test-harnesses.py"
-  cp "$manager_dir/skills.txt" "$candidate_dir/.manager/skills.txt"
-  cp -R "$manager_dir/patches" "$candidate_dir/.manager/patches"
+  # Keep distribution history and its exporter inside the same atomic update.
+  cp -R "$manager_dir/." "$candidate_dir/.manager/"
   cp "$install_root/skills-lock.json" "$candidate_dir/.manager/skills-lock.json"
   chmod +x "$candidate_dir/.manager/manage.sh"
 
@@ -390,11 +387,13 @@ build_candidate() {
   write_content_lock "$candidate_dir" "$candidate_dir/.manager/content-lock.json"
   validate_tree "$candidate_dir" "$candidate_dir/.manager/skills-lock.json" "$candidate_dir/.manager/content-lock.json"
   validate_patches_applied "$candidate_dir" "$candidate_dir/.manager/patches"
+  python3 "$candidate_dir/.manager/pr-snapshot.py" export
 }
 
 verify_current() {
   validate_tree "$target_dir" "$manager_dir/skills-lock.json" "$manager_dir/content-lock.json"
   validate_patches_applied "$target_dir" "$manager_dir/patches"
+  python3 "$manager_dir/pr-snapshot.py" check
   echo "Verified $(wc -l < "$manifest" | tr -d ' ') managed Matt skills."
 }
 

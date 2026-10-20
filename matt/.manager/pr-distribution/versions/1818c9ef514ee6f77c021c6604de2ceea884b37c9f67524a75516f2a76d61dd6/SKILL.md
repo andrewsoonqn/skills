@@ -1,0 +1,445 @@
+---
+name: pr
+description: "Use when writing a PR body or opening or updating a pull request."
+metadata:
+  credits:
+    skill: show-me
+    author: Dex Horthy
+    organisation: Humanlayer
+    url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
+---
+
+## Workflow
+
+1. Read the repository's PR template and the complete diff against the intended base. Preserve repository headings and checklists. Add the sections below within that structure where appropriate.
+2. Identify the problem, demonstrable outcome, and whether the change achieves that outcome completely. Include closing issue references only when applicable.
+3. Describe the user or system impact and write a grouped change walkthrough from the diff. Prefer Mermaid architecture or sequence diagrams over file trees when relationships or flow need explanation.
+4. Collect observed verification results and applicable artifacts. Finish when each reported result has evidence and untested behavior is explicit.
+5. When asked to open or update a PR, identify the actual upstream and remote, choose the base explicitly, and confirm it exists on the target remote. Run `gh pr list --head <branch> --repo <owner/repo>` first. Update an existing PR with `gh pr edit`, otherwise create it. Push only when explicitly requested. If the branch is not available remotely, report that blocker and retain the draft.
+
+Keep the rendered description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Link to supporting detail instead of repeating it. Leave PR paragraphs and bullets unwrapped.
+
+## Base PR template
+
+Use the following repository template as the base. Impact, Change Walkthrough, test commands and verification bullets, Artifacts, and Limitations are additions. Preserve the Summary, Description of Changes, Verification, Tests, and Checklist structure and its existing instructions. Apply repository-specific checklists only where applicable.
+
+````markdown
+<!--
+Keep the entire rendered PR description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Keep the outcome, essential changes, repeatable evidence and material limitations. Link to supporting detail instead of repeating it.
+-->
+
+## Summary
+
+<!--
+Provide a concise summary of what this pull request is addressing.
+
+If this PR closes any issues, list them here by number (e.g., Closes #123).
+
+What is the demonstrable outcome of this PR? And is it complete or needs future changes to achieve these outcomes? State in natural prose.
+-->
+
+Closes #
+
+## Description of Changes
+
+<!--
+Detail the specific changes made in this pull request. Explain the problem addressed and how it was resolved. If applicable, provide before and after comparisons, screenshots, or any relevant details to help reviewers understand the changes easily.
+-->
+
+### Impact
+
+#### New
+
+- **N1:** <Added Y so that users can Z.>
+
+#### Fixes
+
+- **F1:** <Fixed issue Y which previously caused Z.>
+
+#### Others
+
+- **O1:** <Other meaningful user or system outcomes.>
+
+### Change Walkthrough
+
+| Area / Files | Change | Why / Impact |
+|---|---|---|
+| ... | ... | N1, F1, or O1 when supported, otherwise explain why |
+
+<Mermaid diagram when it clarifies architecture or flow>
+
+## Verification
+
+### Tests
+
+<!--
+Give repeatable commands, observed results and the behavior each proves. State what was not exercised, such as real login, persistence or production routing. For a foundation-only change, show its interface and a test or caller exercising it. Be concise
+-->
+
+**<Test scenario>** <append (new) only for a newly added test>
+
+```sh
+<Concrete test run command, including working directory when needed>
+```
+
+- <Ran or checked X using Y and observed Z, with actual output, counts, errors, or measurements>
+
+### Artifacts
+
+<Screenshots or video for UI changes. Flame charts when profiling is relevant.>
+
+### Limitations
+
+- <Material limitation or behavior not exercised>
+
+### Checklist
+
+- [ ] Documentation has been updated where applicable, including docstrings for API changes.
+- [ ] Go code passes formatting and correctness checks (`make fmt` to format, `make lint` to verify).
+````
+
+## Retained template reference
+
+The earlier template and guidance remain below for later pruning. The base template above controls the PR structure.
+
+Use this template for writing the PR body:
+
+```markdown
+## Summary
+
+<Problem, demonstrable outcome, and whether the outcome is complete>
+Closes #... <when applicable>
+
+<diagram, diff-sketch, or tree>
+
+## Before / After
+
+| Before | After |
+|---|---|
+| Previous behavior | New behavior |
+
+## Change Walkthrough
+
+| Area / Files | Change | Why |
+|---|---|---|
+| ... | ... | ... |
+
+<Mermaid diagram when it clarifies architecture or flow>
+
+## Verification
+
+- <Action performed, method or command, and observed result>
+
+<Screenshots, video, or profiling artifacts>
+<Material limitations and anything not exercised>
+
+## Evidence
+
+- **Before:** <screenshot/output/failing test run>
+  **After:** <screenshot/output/passing test run>
+
+## Merge Danger
+
+**Door:** <one-way or two-way>
+
+<optional: description>
+
+**Blast Radius:** <one-word description>
+
+<optional: potential ramifications of merge>
+```
+
+## Sections
+
+Skip all preambles and keep prose brief. Use the user's domain language from `GLOSSARY.md`.
+
+The examples below illustrate reporting style. Replace their scenarios, paths, counts, timings, and artifacts with evidence from the actual change. They are not results to copy into a PR.
+
+### Summary
+
+Pick the smallest view that makes the key point clear.
+
+- Show logic or an algorithm as pseudocode:
+
+```text
+on(save)
+  if content is unchanged
+    return cached result
+  write new content
+  return fresh result
+```
+
+- Show runtime control flow as a call tree:
+
+```text
+submitForm
+  createSession
+    persistPrompt
+    launchAgent
+  navigateToSession
+```
+
+- Show UI structure as a component tree, including state and module boundaries that matter:
+
+```text
+<SessionPage> (apps/example/src/routes/session.tsx)
+  useSessionEvents()
+  <SessionToolbar>
+    <RunSkillButton> (packages/ui)
+```
+
+- Show file responsibility or a broad refactor as a shallow file tree:
+
+```text
+src/
+├── commands/       # parses user actions
+├── sessions/       # owns session state
+└── transport/      # sends API requests
+```
+
+- Show component interaction, control flow, or data flow with Mermaid:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI
+    participant Daemon
+    User->>UI: choose command
+    UI->>Daemon: send expanded prompt
+    Daemon-->>UI: stream result
+```
+
+- Use `diff` when the point is what changes and the surrounding shape already exists. Match the diff shape to the topic.
+
+For a component change:
+
+```diff
+ <SessionPage>
+   useSessionEvents()
+   <SessionToolbar>
++    <RunSkillButton />
+   <SessionTimeline>
++    <SkillResultCard />
+```
+
+For a file-layout change:
+
+```diff
+ src/
+ ├── commands/
++│   └── show-me.ts       # expands the slash command
+ ├── sessions/
+-└── transport.ts
++└── transport/
++    ├── client.ts
++    └── stream.ts
+```
+
+For a call-tree or call-stack change:
+
+```diff
+ submitForm
+   createSession
+     persistPrompt
++    expandSkillMention
+     launchAgent
+-  navigateToSession
++  navigateToSession
++    subscribeToEvents
+```
+
+For a state or control-flow change:
+
+```diff
+ on(save)
+-  write content
++  if content is unchanged
++    return cached result
++  write new content
++  invalidate cache
+```
+
+- Show the whole block when most of it is new, when omitted context would hide ownership or order, or when the user needs a copyable target shape:
+
+```ts
+function expandSkill(command: string): string {
+  const skillName = command.slice(1);
+  return `use the ${skillName} skill`;
+}
+```
+
+#### Guidance
+
+Place each visual next to the short text it supports. Keep only the calls, files, props, states, and boundaries needed to answer the user's current question or the options to resolve the current discussion point.
+
+You may use one of these, you may use several, it is unlikely you will use all of them. Use your judgement and don't overwhelm the user.
+
+### Evidence
+
+Concrete evidence that the change works. Show a before and after.
+
+Screenshots are S-tier - when the environment is set up for it and the change is visual.
+
+Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
+
+### Impact
+
+Use three subsections: New, Fixes, and Others. Write natural prose describing who benefits, what they can now do or which issue they no longer face, and why that matters. For example, "Added Y so that users can Z" or "Fixed issue Y which previously caused Z". Use before/after comparisons when useful, rather than forcing every impact into a table or an "As a X" formula.
+
+Assign impact points stable references such as N1, F1, and O1 so the walkthrough can refer back to them. Mark an empty subsection "None". State user impact only when supported by the diff or evidence. Distinguish an observed baseline from an inference based on the old code. Report a failing before-run only when it was actually captured.
+
+#### Impact examples
+
+Positive:
+
+```markdown
+#### New
+- **N1:** Added a requirement to identify where each new test's expected outcome comes from.
+
+#### Fixes
+- **F1:** Removed automatic TDD routing so ordinary implementation requests no longer select test-first development.
+
+#### Others
+- **O1:** Preserved existing checks, E2E verification, and repository-required tests.
+```
+
+Negative:
+
+```markdown
+- Updated testing instructions.
+- Improved the workflow.
+```
+
+### Change Walkthrough
+
+Use a CodeRabbit-style grouped walkthrough: one row per coherent area, the relevant files, what changed, and why. This is a change summary, not a list of every file or a dependent-PR stack. Reference the relevant Impact point, such as N1 or F1, when that relationship is available from the diff or evidence. Otherwise explain the change and why directly, without inventing a connection. Link actual dependent PRs separately when they exist.
+
+Append `(new)` to each file path added by the change in the Change Walkthrough. Determine new files from the diff against the intended base, not from whether they are new to the reader. Leave modified, renamed, and deleted files unmarked.
+
+#### Change Walkthrough examples
+
+Positive:
+
+```markdown
+| Area / Files | Change | Why / Impact |
+|---|---|---|
+| AGENTS.md | Require independent expectations for new tests. | N1 |
+| skills/matt/.manager/patches/implement-evidence-grounded-testing.patch (new), skills/matt/implement/SKILL.md | Replace automatic TDD selection with the global testing policy. | F1 |
+| skills/matt/.manager/content-lock.json | Record rebuilt skill hashes. | Let the manager detect unrecorded changes. |
+```
+
+Negative:
+
+```markdown
+| Area / Files | Change | Why / Impact |
+|---|---|---|
+| AGENTS.md (new) | Updated file. | N1, F1, O1 |
+| skills/matt/.manager/content-lock.json | Changed hashes. | Improve the user experience. |
+```
+
+The negative example marks a modified file as new and invents impact references and user benefits.
+
+### Verification
+
+Show concrete test run commands in shell blocks, including the working directory and relevant flags. Label a test scenario `(new)` only when the test was added by this change. Report verification as bullet points. Start each bullet with the action performed, then state how it was performed and the observed result. Omit the first-person subject. Include the method that supports the claim, such as the command run, comparison made, or failure deliberately injected. Keep trivial change-scope statements in the Change Walkthrough instead of the verification bullets. Report counts, errors, warnings, or measurements when captured. Distinguish passed, failed, and not run. A command without its result is not verification evidence.
+
+#### Verification examples
+
+Positive:
+
+````markdown
+```sh
+cd ~/.agents/skills
+./matt/.manager/manage.sh verify
+python3 matt/.manager/test-harnesses.py
+```
+
+- Compared every installed skill file before and after the rebuild. Diagnosis and code-review were byte-for-byte unchanged.
+- Ran the manager rebuild twice and compared the resulting file contents. Both rebuilds produced identical installations.
+- Deliberately supplied incompatible upstream PR-skill content and ran the update. It failed, and comparing installed files before and afterward showed no changes.
+- Ran the commands above. All 22 managed skills and 44 harness links passed verification.
+````
+
+Negative:
+
+```markdown
+- All tests passed.
+- Conflicting patch left the installation unchanged.
+- Only changed implement, ask-matt, and tdd.
+```
+
+The first two omit how the result was established. The last is a change-scope statement, not a verification result.
+
+State what was not exercised, such as real login, persistence, or production routing. For a foundation-only change, show its interface and a test or caller exercising it.
+
+For UI changes, attach before/after screenshots for visual differences and video for interactive flows. Include the scenario and relevant viewport or state. Use attachments or reviewer-accessible URLs. Local file paths alone are not PR attachments. If artifacts cannot be uploaded, state the limitation and where they are available locally.
+
+#### UI evidence examples
+
+Positive:
+
+```markdown
+- Changed notification settings, saved, and reloaded at desktop and mobile widths. The saved values persisted, and the confirmation remained visible without overlapping the controls.
+
+Before: <attached screenshot>
+After: <attached screenshot>
+Interaction: <attached recording showing edit, save, and reload>
+```
+
+Negative:
+
+```markdown
+- UI looks good.
+- Screenshot: /tmp/after.png
+```
+
+The negative example gives no scenario or result, and a local path is not a reviewer-accessible attachment.
+
+For performance changes, include flame charts when profiling helps explain the result. State the workload, environment, and measured before/after results. Link large profiling artifacts instead of embedding them in full.
+
+#### Performance evidence examples
+
+Positive:
+
+```markdown
+- Profiled the same 10,000-record import before and after the change. Median duration across five runs fell from 2.4s to 1.6s. The attached flame charts show the reduced time in parsing.
+```
+
+Negative:
+
+```markdown
+- Much faster now.
+- Import takes 1.6s.
+```
+
+The negative example omits the workload, comparison, and measurement method.
+
+Write Limitations as bullet points, one material limitation or untested behavior per bullet. Explain what the check is scoped to and what it cannot test. When a check was deliberately not run, state the reason for that decision and what remains unverified.
+
+#### Limitations examples
+
+Positive:
+
+```markdown
+- Structural checks are limited to document contents, so they cannot test future coding-agent behavior.
+- Mocked requests cannot test authentication against the live provider because they are only scoped to local request handling.
+- Due to the risk of modifying live records, chose not to run production imports. Verification used a local fixture, so production permissions and data compatibility remain unverified.
+```
+
+Negative:
+
+```markdown
+- Some things were not tested.
+- Production was not tested.
+- Everything should work.
+```
+
+The negative example omits scope and decision rationale, then makes an unsupported assurance.
+
+Put artifacts beside the claims they support. Use Evidence for supporting artifacts that are not already covered in Verification.
+
+### Merge Danger
+
+Describe whether it's a one-way or two-way door. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
+
+The blast radius is the potential impact or scope of the changes introduced by this PR. Consider all possibilities. Examples are layout shift, breakages for consumers, mobile responsiveness, etc.

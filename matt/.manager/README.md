@@ -17,6 +17,102 @@ Run from any directory:
 - `update` builds and validates the latest candidate, then replaces `matt/`.
 - `install` is an alias for `update` for a restored manager checkout.
 
+## Published PR skill snapshots
+
+Every `update`/`install` exports the finished, patched `pr` skill **before** the
+atomic replacement. The exporter and distribution history travel with `.manager`.
+`verify` also checks that the current export matches the rendered files and PR
+patch provenance. `check` builds the same export in its disposable candidate.
+An upstream or patch failure leaves both the installed tree and export unchanged.
+
+The tracked distribution is `matt/.manager/pr-distribution/`:
+
+- `latest.json` selects a version, the SHA256 of its exact `manifest.json` bytes.
+- `versions/<version>/` contains `manifest.json`, the unchanged rendered skill
+  files, the Matt MIT `LICENSE`, and the HumanLayer MIT `LICENSE.show-me` for
+  copied show-me material. The manifest records byte counts,
+  SHA256 hashes, the upstream lock record, and PR patch hashes.
+- Versions are immutable and retained when a later update changes the skill.
+  Repeated exports of identical inputs produce identical files and version IDs.
+
+Commit the generated distribution with the manager/source changes and push using
+the repository's normal Git workflow. Export is automatic during a rebuild;
+network publication still requires that ordinary commit and push. The manager
+does not auto-commit user files, auto-push, fetch new credentials, or install hooks.
+The rendered `matt/pr/` remains ignored managed output. Do not edit its exported
+copy or its source directly; customize through the tracked PR patch as before.
+
+### Load once for a cloud PR task
+
+Resolve the chosen published branch to one **full Git commit SHA** using the
+task's existing GitHub connector. Use that SHA for every subsequent file fetch.
+Retrieve `matt/.manager/pr-snapshot.py` from that commit. The existing connector
+can then download `pr-distribution/latest.json`, the selected version's
+`manifest.json`, and every file named in its `files` mapping, preserving relative
+paths under a temporary local distribution directory. No local credentials are
+copied. The connector, not a caller-provided download URL, establishes repository
+and commit identity. Do not concatenate unvalidated manifest paths into filesystem
+paths: reject absolute paths, `..`, and symlinks; the loader also rejects them.
+
+Run the loader against those downloaded files:
+
+```sh
+python3 /path/to/pr-snapshot.py load \
+  --source /path/to/downloaded/pr-distribution \
+  --revision FULL_40_CHARACTER_COMMIT_SHA \
+  --destination /workspace/shared/skills/pr-TASK_ID
+```
+
+Alternatively, when the cloud environment already has authenticated `gh`, the
+loader performs those read-only API fetches itself:
+
+```sh
+python3 /path/to/pr-snapshot.py load \
+  --repo andrewsoonqn/skills \
+  --revision FULL_40_CHARACTER_COMMIT_SHA \
+  --destination /workspace/shared/skills/pr-TASK_ID
+```
+
+The destination must be new. Download/validation failures do not install partial
+skills or replace an existing directory. A successful load prints and saves
+`.snapshot-pin.json` with the repository (for gh mode), commit, and version.
+Repeating the same load verifies and reuses that local pin without consulting
+`latest.json`; another commit is refused for that task. A connector download
+must actually come from the supplied commit; hashes verify integrity, not the
+identity of a caller-supplied directory. The loader is stdlib Python, and needs
+`gh` only in `--repo` mode. It never changes authentication or network settings.
+
+Read the installed `SKILL.md` and follow it for the task, retaining its existing
+`agents/openai.yaml` invocation policy. When native skill discovery is wanted,
+use a fresh task-local `.agents/skills/pr` destination or a symlink into that
+supported skill location. Loading files alone does not activate a skill in an
+already-running agent; the orchestrator must explicitly load/invoke the file.
+
+**Task-start integration remains an explicit orchestrator handoff.** No supported
+cloud task-start hook is connected by this change. Each new task must resolve a
+published commit and perform the loading step; never refresh instructions halfway
+through a task. The public repository requires no new credential to read, but
+connector and network availability must already exist in the cloud workflow.
+
+Test without touching the real skill or contacting upstream:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 matt/.manager/test-pr-snapshot.py
+```
+
+The disposable fixture runs the real manager update, patch, validation, export,
+and atomic replacement with a fake installer transport. It checks reproducibility,
+update propagation, historical versions, task pinning, tampering/incomplete
+rejection (with specific failure reasons and no tracebacks), license tampering,
+and preservation after a failed upstream update. The initial real
+snapshot can be bootstrapped after validating the existing installation with:
+`python3 matt/.manager/pr-snapshot.py export`. Normal future rebuilds need no
+separate export command. Preserve `pr-upstream-LICENSE`, `pr-show-me-LICENSE`,
+and `CREDITS.md` when redistributing snapshots. The HumanLayer notice is from
+`humanlayer/skills` commit `653b6411c1f70c275a18e37673b042ff99f67ceb`;
+review licensing if upstream changes its terms. Earlier snapshot directories
+remain byte-for-byte immutable; current exports include both notices.
+
 A failed download, patch, or validation leaves the current installation unchanged. The final directory exchange is atomic and retains the previous tree until post-install verification passes.
 
 ## Nested skills across harnesses
