@@ -1,6 +1,6 @@
 ---
 name: design-evidence
-description: Use when a product or UI decision needs references (screenshots of how existing products handle it), mockups, or a clickable prototype of the options drawn in the target app's own style.
+description: Use when a product or UI decision needs references (screenshots of how existing products handle it), mockups or a clickable prototype of the options in the target app's own style, or a recorded walkthrough of a flow.
 ---
 
 # Design evidence page
