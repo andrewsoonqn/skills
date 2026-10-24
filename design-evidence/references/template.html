@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TITLE</title>
+<style>
+  /* Replace the tokens with the target app's palette. These match a dark review app. */
+  :root { color-scheme: dark; --bg:#0f0f10; --panel:#18181a; --line:#2a2a2d; --muted:#9a9aa0; --fg:#e8e8ea; --add:#12261a; --accent:#3fb37f; --note:#1d2433; --notel:#5b7bd6; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  main { max-width:1100px; margin:0 auto; padding:32px 20px 80px; }
+  h1 { font-size:24px; margin:0 0 4px; } h2 { font-size:20px; margin:48px 0 8px; border-top:1px solid var(--line); padding-top:24px; } h3 { font-size:16px; margin:28px 0 6px; }
+  p, li { color:#d4d4d8; max-width:78ch; } .muted { color:var(--muted); font-size:13px; }
+  figure { margin:12px 0 24px; } figure img { width:100%; border:1px solid var(--line); border-radius:8px; display:block; }
+  figcaption { color:var(--muted); font-size:13px; margin-top:6px; }
+  .tag { display:inline-block; font-size:12px; padding:1px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); margin-right:6px; }
+  pre.transcript { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px; font:13px/1.5 ui-monospace, Menlo, monospace; white-space:pre-wrap; color:#cfcfd4; }
+  .grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; } .grid > * { min-width:0; }
+  @media (max-width:800px) { .grid { grid-template-columns:1fr; } }
+  /* Mock diff: header, numbered rows, added rows, inline note rows, selection and toolbar. */
+  .mock { background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; font:13px/1.6 ui-monospace, Menlo, monospace; }
+  .mock .head { padding:8px 12px; border-bottom:1px solid var(--line); font-family:-apple-system, sans-serif; display:flex; justify-content:space-between; color:#d4d4d8; }
+  .mock .row { display:flex; } .mock .ln { width:36px; text-align:right; padding-right:10px; color:#6b6b72; flex:none; } .mock .code { white-space:pre; overflow:hidden; text-overflow:ellipsis; }
+  .mock .add { background:var(--add); } .mock .add .ln { color:var(--accent); }
+  .mock .expl { margin:4px 12px 6px 46px; padding:8px 10px; background:var(--note); border-left:3px solid var(--notel); border-radius:4px; font:13px/1.5 -apple-system, sans-serif; color:#d6def5; }
+  .mock .expl .meta { color:#8ea2d8; font-size:12px; display:block; margin-bottom:2px; }
+  .mock .sel { background:#21304f; } .mock .toolbar { margin:4px 12px 6px 46px; font:12px -apple-system, sans-serif; color:var(--muted); }
+  .btn { display:inline-block; border:1px solid var(--line); border-radius:6px; padding:2px 8px; margin-right:6px; color:#e8e8ea; background:#222226; } .btn.on { background:#2d6a4f; border-color:#2d6a4f; }
+  table { border-collapse:collapse; width:100%; font-size:14px; } td, th { border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; } th { color:var(--muted); font-weight:500; }
+</style>
+</head>
+<body>
+<main>
+<h1>TITLE</h1>
+<p class="muted">Which images are native captures, which are third-party (and from where), and which figures are mockups.</p>
+
+<h2>Q1. QUESTION</h2>
+<h3>Product: one-line claim</h3>
+<p>What the product does, in two or three sentences.</p>
+<figure><img src="../evidence/FOLDER/product.png" alt="WHAT IT SHOWS"><figcaption>Product: what to look at in this image.</figcaption></figure>
+
+<h3>Mockups for this app</h3>
+<div class="grid">
+<div>
+<p><span class="tag">Option A</span>What this option does.</p>
+<div class="mock">
+<div class="head"><span>FILE</span><span><span class="btn on">Toggle</span>+N</span></div>
+<div class="row add"><span class="ln">1</span><span class="code">REAL CODE LINE</span></div>
+<div class="expl"><span class="meta">Lines 1-9 · source · commit</span>Inline note text.</div>
+<div class="row"><span class="ln">12</span><span class="code">REAL CODE LINE</span></div>
+</div>
+</div>
+<div>
+<p><span class="tag">Option B</span>What this option does.</p>
+<div class="mock">
+<div class="head"><span>FILE</span><span>+N</span></div>
+<div class="row sel"><span class="ln">18</span><span class="code">SELECTED LINE</span></div>
+<div class="toolbar"><span class="btn">Action</span><span class="btn on">Active action</span></div>
+</div>
+</div>
+</div>
+
+<h3>Summary</h3>
+<table>
+<tr><th>Option</th><th>Who does it</th><th>Where it shows</th><th>When it is made</th></tr>
+<tr><td>A</td><td>Products, or "Not found"</td><td></td><td></td></tr>
+</table>
+</main>
+</body>
+</html>
