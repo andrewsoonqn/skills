@@ -42,6 +42,25 @@ def validate(skill):
     )
 
 
+    # The approved template fixes the visible section order and disclosure label.
+    template = text.split('## Base PR template\n', 1)[1].split('## Retained template reference\n', 1)[0]
+    assert re.findall(r'^## (.+)$', template, re.MULTILINE) == [
+        'Summary', 'Artifacts', 'Merge Danger', 'Description of Changes', 'Verification',
+    ]
+    artifacts = template.split('## Artifacts\n', 1)[1].split('## Merge Danger\n', 1)[0]
+    media, walkthrough = artifacts.split('<summary>Try it yourself</summary>', 1)
+    assert 'screenshots' in media and 'video for interactive flows' in media
+    assert 'If a reviewer-accessible preview exists' in walkthrough
+    assert '**Setup:**' in walkthrough and '**Cleanup:**' in walkthrough
+    assert 'Omit this disclosure if neither a preview nor a useful walkthrough is available' in walkthrough
+    danger = template.split('## Merge Danger\n', 1)[1].split('## Description of Changes\n', 1)[0]
+    assert '**Door:**' in danger and '**Blast Radius:**' in danger
+    verification = template.split('## Verification\n', 1)[1]
+    assert re.findall(r'^### (.+)$', verification, re.MULTILINE) == ['Tests', 'Limitations', 'Checklist']
+    assert '<summary>Automated test evidence</summary>' in verification
+    assert 'ask once' in workflow and 'Proceed without waiting unless' in workflow
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skill", type=Path, default=Path(__file__).resolve().parent.parent / "pr/SKILL.md")
@@ -50,4 +69,4 @@ if __name__ == "__main__":
         validate(args.skill)
     except (AssertionError, IndexError, StopIteration) as error:
         raise SystemExit(f"PR guidance regression: {error}")
-    print("PASS: complete owner/head/base lookup, explicit-number edit, incomplete/ambiguous lookup stop, historical-template precedence (source contracts only)")
+    print("PASS: complete owner/head/base lookup, explicit-number edit, incomplete/ambiguous lookup stop, historical-template precedence, active layout and wording nudge (source contracts only)")
