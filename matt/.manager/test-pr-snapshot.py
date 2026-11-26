@@ -34,6 +34,8 @@ with tempfile.TemporaryDirectory(prefix="pr-snapshot-test-") as tmp:
     skill = manager.parent / "pr"
     (skill / "agents").mkdir(parents=True)
     (skill / "SKILL.md").write_text('---\nname: pr\ndescription: fixture\n---\nbase fixture\n')
+    (skill / "scripts").mkdir()
+    (skill / "scripts/check-artifacts.py").write_text('print("fixture checker")\n')
     (skill / "CREDITS.md").write_text('Fixture attribution\n')
     (skill / "agents/openai.yaml").write_text('interface:\n  display_name: PR\n')
     (manager / "skills.txt").write_text('pr\n')
@@ -83,6 +85,7 @@ shutil.copy2(source/'skills-lock.json', pathlib.Path.cwd()/'skills-lock.json')
                     "--destination", destination], success, expect=expect)
     load(task)
     assert (task / "SKILL.md").read_bytes() == expected
+    assert (task / "scripts/check-artifacts.py").read_bytes() == (skill / "scripts/check-artifacts.py").read_bytes()
     load(task)  # repeat invocation verifies and reuses the pin
     load(root / "branch-ref", revision="main", success=False, expect="full immutable Git commit SHA")
     assert not (root / "branch-ref").exists()

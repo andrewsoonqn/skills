@@ -34,6 +34,10 @@ def validate(skill):
     )
     assert "metadata is missing" in step and "several exact matches" in step
     assert "instead of guessing" in step
+    boundary = text.split("## Publication boundary\n", 1)[1]
+    for requirement in ("outside tracked product docs and PR diffs", "check-artifacts.py", "--base", "--pr-body", "--allow", "exact bytes", "every flag", "error/incomplete check", "not perfect prevention", "fixtures, configs, schemas, migrations", "Do not delete existing user work"):
+        assert requirement in boundary, f"missing publication boundary: {requirement}"
+    assert "staged/diff artifact check" in workflow
     historical = text.split("## Retained template reference\n", 1)[1].split("````", 1)[0]
     assert "Historical reference only" in historical, "retained template must be historical only"
     assert "authoritative Base PR template above" in historical
