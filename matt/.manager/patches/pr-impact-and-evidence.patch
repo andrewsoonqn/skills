@@ -8,10 +8,10 @@
  metadata:
    credits:
      skill: show-me
-@@ -9,12 +9,185 @@
+@@ -9,12 +9,191 @@
      url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
  ---
-
+ 
 -Use this template for writing the PR body:
 -
 -```markdown
@@ -20,14 +20,16 @@
 +1. Read the repository's PR template and the complete diff against the intended base. Preserve repository headings and checklists. Add the sections below within that structure where appropriate.
 +2. Identify the problem, demonstrable outcome, and whether the change achieves that outcome completely. Include closing issue references only when applicable.
 +3. Describe the user or system impact without N/F/O prefixes. Write Overview before Verification as a focused file-and-symbol tree in a `diff` fence: descriptive root, filenames by default, actual symbols with `//` role comments, and before/after behavior leaves for changed implementations.
-+4. Collect observed verification results and applicable artifacts. Keep the original automated commands/results/evidence format under Tests, collapsed in `<details>`. Add an optional app-use Walkthrough under Artifacts only when useful: photos/videos visible, written setup/actions/results/cleanup under "Try it yourself". Finish when each reported result has evidence and untested behavior is explicit.
++4. Collect observed verification results and applicable artifacts. Keep the original automated commands/results/evidence format under Tests, collapsed in `<details>`. Put Artifacts immediately after Summary unless the repository template requires a different order. Keep media visible. Put a reviewer-accessible preview link, if available, and any useful local walkthrough in one "Try it yourself" disclosure. Describe reversibility and blast radius under Merge Danger. Finish when each reported result has evidence and untested behavior is explicit.
 +5. When asked to open or update a PR, identify the actual upstream repository, source remote and its repository owner, head branch, and explicit base; confirm the base and head exist on their intended remotes. Do not infer the source owner from a branch-name prefix. Run `gh pr list --head <branch> --repo <owner/repo> --state open --limit 100 --json number,url,headRefName,headRepositoryOwner,baseRefName` first. Establish lookup completeness before selecting a unique PR or concluding none exists: if the returned count reaches the requested limit, increase `--limit` and rerun until the returned count is strictly below the requested limit. If the lookup fails or completeness cannot be established, retain the draft and do not edit or create a PR. A larger fixed limit alone is not proof of completeness. The branch filter cannot distinguish forks: match `headRepositoryOwner.login`, `headRefName` and `baseRefName` against the intended source owner, head branch and explicit base before selecting a PR. Edit the single exact match by explicit number and target repository with `gh pr edit <number> --repo <owner/repo>`. If metadata is missing or several exact matches remain, retain the draft and report the ambiguity instead of guessing. If no exact match exists, create a PR with the explicit target repository, source head/fork and base; do not edit another owner's PR or a PR with a different base. Push only when explicitly requested. If the branch is not available remotely, report that blocker and retain the draft.
++
++Before publishing a PR, use the user's title and opening line verbatim when supplied. If either is missing, show the draft in chat and ask once if they want to reword it. Proceed without waiting unless they explicitly asked to approve the wording first.
 +
 +Keep the rendered description within 1.5–2 pages, including code blocks and images. Prefer shorter when sufficient. Link to supporting detail instead of repeating it. Leave PR paragraphs and bullets unwrapped.
 +
 +## Base PR template
 +
-+Use the following repository template as the base. Impact, Overview, test commands and verification bullets, Artifacts, and Limitations are additions. Preserve the Summary, Description of Changes, Verification, Tests, and Checklist structure and its existing instructions. Apply repository-specific checklists only where applicable.
++Use the following repository template as the base. Impact, Overview, test commands and verification bullets, Artifacts, Merge Danger, and Limitations are additions. Preserve the Summary, Description of Changes, Verification, Tests, and Checklist structure and its existing instructions. Apply repository-specific checklists only where applicable.
 +
 +````markdown
 +<!--
@@ -35,7 +37,7 @@
 +-->
 +
  ## Summary
-
+ 
 +<!--
 +Provide a concise summary of what this pull request is addressing.
 +
@@ -45,6 +47,32 @@
 +-->
 +
 +Closes #
++
++## Artifacts
++
++<Before/after screenshots for visual differences, video for interactive flows, or flame charts when profiling is relevant. Keep media visible outside the disclosure, use reviewer-accessible URLs, and label fixture or synthetic data. Omit Artifacts when empty unless the repository requires it.>
++
++<details>
++<summary>Try it yourself</summary>
++
++<If a reviewer-accessible preview exists, link directly to the affected screen or state. Label prototypes and simulated data. Include local setup, steps, and cleanup only when useful. Omit this disclosure if neither a preview nor a useful walkthrough is available.>
++
++**Setup:** <Exact existing launch/setup script, prerequisites, test login or synthetic roles, entry URL and readiness cue. State if data/auth/services are simulated.>
++
++1. <Reach the feature through the actual app's controls or user-facing CLI.> **Visible result:** <What appears.>
++2. <Perform the meaningful interaction or role change.> **Visible result:** <What changes; reopen/reload or cross-check when needed.>
++
++**Cleanup:** <Stop only processes launched for this walkthrough and reset only its disposable data; retain the media/evidence.>
++
++<Include setup instructions, actions, expected/observed results, captions/explanations and cleanup inside this block. Do not substitute unit-test commands for app use or invent scripts, accounts, credentials or execution results.>
++
++</details>
++
++## Merge Danger
++
++**Door:** <One-way or two-way. Explain what's involved in reversing it.>
++
++**Blast Radius:** <Which users, workflows, data, or systems could be affected?>
 +
 +## Description of Changes
 +
@@ -98,28 +126,6 @@
 +```
 +
 +- <Ran or checked X using Y and observed Z, with actual output, counts, errors, or measurements>
-+
-+</details>
-+
-+### Artifacts
-+
-+<Screenshots or video for UI changes. Flame charts when profiling is relevant.>
-+
-+#### Walkthrough (optional)
-+
-+<Photos/videos of the real app experience stay visible here, outside details. Label fixture/synthetic data and provide reviewer-accessible media URLs.>
-+
-+<details>
-+<summary>Try it yourself</summary>
-+
-+**Setup:** <Exact existing launch/setup script, prerequisites, test login or synthetic roles, entry URL and readiness cue. State if data/auth/services are simulated.>
-+
-+1. <Reach the feature through the actual app's controls or user-facing CLI.> **Visible result:** <What appears.>
-+2. <Perform the meaningful interaction or role change.> **Visible result:** <What changes; reopen/reload or cross-check when needed.>
-+
-+**Cleanup:** <Stop only processes launched for this walkthrough and reset only its disposable data; retain the media/evidence.>
-+
-+<Include setup instructions, actions, expected/observed results, captions/explanations and cleanup inside this block. Do not substitute unit-test commands for app use or invent scripts, accounts, credentials or execution results.>
 +
 +</details>
 +
@@ -194,28 +200,28 @@
 +</details>
 +
 +<Material limitations and anything not exercised>
-
+ 
  ## Evidence
-
-@@ -30,11 +203,13 @@
+ 
+@@ -30,11 +209,13 @@
  **Blast Radius:** <one-word description>
-
+ 
  <optional: potential ramifications of merge>
 -```
 +````
-
+ 
  ## Sections
-
+ 
  Skip all preambles and keep prose brief. Use the user's domain language from `GLOSSARY.md`.
 +
 +The examples below illustrate reporting style. Replace their scenarios, paths, counts, timings, and artifacts with evidence from the actual change. They are not results to copy into a PR.
-
+ 
  ### Summary
-
-@@ -163,6 +338,188 @@
-
+ 
+@@ -163,6 +344,186 @@
+ 
  Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
-
+ 
 +### Impact
 +
 +Use three subsections: New, Fixes, and Others. Write natural prose describing who benefits, what they can now do or which issue they no longer face, and why that matters. For example, "Added Y so that users can Z" or "Fixed issue Y which previously caused Z". Use before/after comparisons when useful, rather than forcing every impact into a table or an "As a X" formula.
@@ -275,51 +281,9 @@
 +
 +Avoid full paths where a filename identifies the file, plus/minus markers on retained nodes, and simplified behavior disguised as a literal symbol.
 +
-+### Verification
++### Artifacts
 +
-+Keep automated Tests in its existing evidence format, inside `<details>` with `<summary>Automated test evidence</summary>` and blank lines around Markdown content. Preserve actual commands/results and test boundaries; do not replace them with human demo steps or invent executed tests.
-+
-+Show concrete test run commands in shell blocks, including the working directory and relevant flags. Label a test scenario `(new)` only when the test was added by this change. Report verification as bullet points. Start each bullet with the action performed, then state how it was performed and the observed result. Omit the first-person subject. Include the method that supports the claim, such as the command run, comparison made, or failure deliberately injected. Keep trivial change-scope statements in the Overview instead of the verification bullets. Report counts, errors, warnings, or measurements when captured. Distinguish passed, failed, and not run. A command without its result is not verification evidence.
-+
-+#### Verification examples
-+
-+Positive:
-+
-+````markdown
-+<details>
-+<summary>Automated test evidence</summary>
-+
-+```sh
-+cd ~/.agents/skills
-+./matt/.manager/manage.sh verify
-+python3 matt/.manager/test-harnesses.py
-+```
-+
-+- Compared every installed skill file before and after the rebuild. Diagnosis and code-review were byte-for-byte unchanged.
-+- Ran the manager rebuild twice and compared the resulting file contents. Both rebuilds produced identical installations.
-+- Deliberately supplied incompatible upstream PR-skill content and ran the update. It failed, and comparing installed files before and afterward showed no changes.
-+- Ran the commands above. All 22 managed skills and 44 harness links passed verification.
-+
-+</details>
-+````
-+
-+Negative:
-+
-+```markdown
-+- All tests passed.
-+- Conflicting patch left the installation unchanged.
-+- Only changed implement, ask-matt, and tdd.
-+```
-+
-+The first two omit how the result was established. The last is a change-scope statement, not a verification result.
-+
-+State what was not exercised, such as real login, persistence, or production routing. For a foundation-only change, show its interface and a test or caller exercising it.
-+
-+#### Optional Artifacts → Walkthrough
-+
-+Add this only when a reviewer can usefully experience the real app or its supported demo mode. Omit it for changes with no useful runnable experience. This is app setup and use, not another unit-test command list; Tests remains the automated evidence section.
-+
-+Under Walkthrough, keep reviewer-accessible photos/videos visible outside `<details>`. Put all written setup, prerequisites, login/synthetic-role instructions, app entry steps, actions, expected/observed results, captions/explanations and cleanup inside `<details><summary>Try it yourself</summary>`, with blank lines so GitHub renders the Markdown correctly.
++Keep reviewer-accessible photos and videos visible outside `<details>`. Link directly to the affected screen or state inside `<details><summary>Try it yourself</summary>` if a reviewer-accessible preview is available. Label prototypes and simulated data. If useful, put written setup, prerequisites, login or synthetic roles, actions, visible results, and cleanup in the same disclosure. Omit it when neither a preview nor a useful walkthrough is available. Leave blank lines around Markdown content so GitHub renders it correctly. Keep automated checks in Tests.
 +
 +Inspect the actual launch path and existing setup/fixture scripts first. Name real commands, dependencies, URLs, role controls and readiness cues; never invent accounts, passwords, helpers or evidence. If a safe script is needed during authorized implementation, provide one; for a description-only task, state missing setup rather than pretending it exists. Use a disposable instance, data directory or test account when supported, and do not drive someone else's active session. Present each meaningful app action with a visible result; when persistence matters, reopen/reload or use a suitable read-only cross-check. Distinguish expected reviewer outcomes from behavior actually observed. Stop only processes the walkthrough launched, reset only its disposable state, and keep proof artifacts.
 +
@@ -374,6 +338,46 @@
 +
 +The negative example omits the workload, comparison, and measurement method.
 +
++### Verification
++
++Keep automated Tests in its existing evidence format, inside `<details>` with `<summary>Automated test evidence</summary>` and blank lines around Markdown content. Preserve actual commands/results and test boundaries; do not replace them with human demo steps or invent executed tests.
++
++Show concrete test run commands in shell blocks, including the working directory and relevant flags. Label a test scenario `(new)` only when the test was added by this change. Report verification as bullet points. Start each bullet with the action performed, then state how it was performed and the observed result. Omit the first-person subject. Include the method that supports the claim, such as the command run, comparison made, or failure deliberately injected. Keep trivial change-scope statements in the Overview instead of the verification bullets. Report counts, errors, warnings, or measurements when captured. Distinguish passed, failed, and not run. A command without its result is not verification evidence.
++
++#### Verification examples
++
++Positive:
++
++````markdown
++<details>
++<summary>Automated test evidence</summary>
++
++```sh
++cd ~/.agents/skills
++./matt/.manager/manage.sh verify
++python3 matt/.manager/test-harnesses.py
++```
++
++- Compared every installed skill file before and after the rebuild. Diagnosis and code-review were byte-for-byte unchanged.
++- Ran the manager rebuild twice and compared the resulting file contents. Both rebuilds produced identical installations.
++- Deliberately supplied incompatible upstream PR-skill content and ran the update. It failed, and comparing installed files before and afterward showed no changes.
++- Ran the commands above. All 22 managed skills and 44 harness links passed verification.
++
++</details>
++````
++
++Negative:
++
++```markdown
++- All tests passed.
++- Conflicting patch left the installation unchanged.
++- Only changed implement, ask-matt, and tdd.
++```
++
++The first two omit how the result was established. The last is a change-scope statement, not a verification result.
++
++State what was not exercised, such as real login, persistence, or production routing. For a foundation-only change, show its interface and a test or caller exercising it.
++
 +Write Limitations as bullet points, one material limitation or untested behavior per bullet. Explain what the check is scoped to and what it cannot test. When a check was deliberately not run, state the reason for that decision and what remains unverified.
 +
 +#### Limitations examples
@@ -399,5 +403,5 @@
 +Put artifacts beside the claims they support. Use Evidence for supporting artifacts that are not already covered in Verification.
 +
  ### Merge Danger
-
+ 
  Describe whether it's a one-way or two-way door. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
