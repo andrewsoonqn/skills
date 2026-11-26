@@ -5,7 +5,7 @@ description: Use when writing or reviewing commits, staging changes, or suggesti
 
 # Commit
 
-Use this workflow to stage and commit changes. Completion means the intended changes are committed and unrelated changes remain untouched. Use the `pr` skill for writing, opening, or updating pull requests. Pushing is a separate action requiring an explicit user request.
+Use this workflow to stage and commit changes. Completion means the intended changes are committed and unrelated changes remain untouched. Use the `pr` skill for writing, opening, or updating pull requests. In synced personal control repos, the sync mechanism handles pushing. Elsewhere, pushing is a separate action requiring an explicit user request.
 
 ## Commit message conventions
 
@@ -60,10 +60,14 @@ Use this workflow to stage and commit changes. Completion means the intended cha
 - Stage and commit one group at a time.
 - Do not use `git add -A` or `git add .` across groups.
 
+## Branch policy
+
+- In the user's personal control repos, commit on the current default branch. Do not create a branch solely because the current branch is `main` or `master`.
+- Create a branch only when the user asks, the repository requires pull requests, or parallel isolation needs one.
+- Follow the repository's own branch policy for coursework, teams, and upstream projects.
+
 ## Steps
 
-1. If on main/master, branch first (conventional prefix:
-   feat/fix/chore/refactor/docs).
 1. Determine scope and grouping per Scope above, then stage and
    commit each group with a message per the conventions above (may be
    more than one commit).
